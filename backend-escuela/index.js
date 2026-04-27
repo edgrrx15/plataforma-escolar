@@ -9,9 +9,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
+//se carga la configuración de las variables de entorno desde el archivo .env
 require('dotenv').config();
 
+// se obtienen las crendenciales de la base de datos
 const pool = new Pool({
     user: process.env.DB_USER,
     host: 'localhost',
@@ -27,7 +28,6 @@ app.get('/', (req, res) => {
 
 
 //se agrega la ruta para el inicio de sesión
-
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
