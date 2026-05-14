@@ -25,7 +25,7 @@ const Login = ({ setUsuario }) => {
   const [modalContacto, setModalContacto] = useState(false);
   const [mostrarPassword, setMostrarPassword] = useState(true);
   const [mostrarOlvido, setMostrarOlvido] = useState(false);
-  
+
 
   const navigate = useNavigate();
 
@@ -169,11 +169,10 @@ const Login = ({ setUsuario }) => {
               <button
                 type="button"
                 onClick={() => setTipoUsuario('estudiante')}
-                className={`flex items-center justify-center gap-3 pb-5 font-semibold cursor-pointer transition-all ${
-                  tipoUsuario === 'estudiante'
+                className={`flex items-center justify-center gap-3 pb-5 font-semibold cursor-pointer transition-all ${tipoUsuario === 'estudiante'
                     ? 'text-[#1d6ff2] border-b-2 border-[#1d6ff2]'
                     : 'text-[#667394] border-b-2 border-transparent'
-                }`}
+                  }`}
               >
                 <User size={23} />
                 Estudiante
@@ -182,11 +181,10 @@ const Login = ({ setUsuario }) => {
               <button
                 type="button"
                 onClick={() => setTipoUsuario('docente')}
-                className={`flex items-center justify-center gap-3 pb-5 font-semibold cursor-pointer transition-all ${
-                  tipoUsuario === 'docente' 
+                className={`flex items-center justify-center gap-3 pb-5 font-semibold cursor-pointer transition-all ${tipoUsuario === 'docente'
                     ? 'text-[#1d6ff2] border-b-2 border-[#1d6ff2]'
                     : 'text-[#667394] border-b-2 border-transparent'
-                }`}
+                  }`}
               >
                 <CalendarCheck size={23} />
                 Administrativos
@@ -224,32 +222,32 @@ const Login = ({ setUsuario }) => {
                   Contraseña
                 </label>
                 {mostrarPassword ? (
-                <div className="relative">
-                  <Lock
-                    size={24}
-                    className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5f6f91]"
-                  />
-                  <input
-                    type="password"
-                    placeholder="Ingresa tu contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full h-16 pl-14 pr-14 bg-white text-[#14264b] border border-[#dce3ee] rounded-2xl outline-none transition-all placeholder:text-[#a7b1c4] focus:border-[#1d6ff2] focus:ring-4 focus:ring-blue-100"
-                    required
-                  />
+                  <div className="relative">
+                    <Lock
+                      size={24}
+                      className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5f6f91]"
+                    />
+                    <input
+                      type="password"
+                      placeholder="Ingresa tu contraseña"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full h-16 pl-14 pr-14 bg-white text-[#14264b] border border-[#dce3ee] rounded-2xl outline-none transition-all placeholder:text-[#a7b1c4] focus:border-[#1d6ff2] focus:ring-4 focus:ring-blue-100"
+                      required
+                    />
 
-                  <Eye
-                    size={24}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 text-[#5f6f91] cursor-pointer"
-                    onClick={toggleMostrarPassword}
-                  />
-                </div>
+                    <Eye
+                      size={24}
+                      className="absolute right-5 top-1/2 -translate-y-1/2 text-[#5f6f91] cursor-pointer"
+                      onClick={toggleMostrarPassword}
+                    />
+                  </div>
                 ) : (
                   <div className="relative">
-                                      <Lock
-                    size={24}
-                    className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5f6f91]"
-                  />
+                    <Lock
+                      size={24}
+                      className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5f6f91]"
+                    />
                     <input
                       type="text"
                       placeholder="Ingresa tu contraseña"
@@ -261,7 +259,7 @@ const Login = ({ setUsuario }) => {
 
                     <EyeOff
                       size={24}
-                      onClick={toggleMostrarPassword} 
+                      onClick={toggleMostrarPassword}
                       className="absolute right-5 top-1/2 -translate-y-1/2 text-[#5f6f91] cursor-pointer"
                     />
                   </div>
@@ -290,7 +288,7 @@ const Login = ({ setUsuario }) => {
 
               <ModalRecuperar modalAbierto={mostrarOlvido} setModalAbierto={setMostrarOlvido} />
 
-              
+
 
               {/* Error */}
               {error && (
@@ -319,7 +317,7 @@ const Login = ({ setUsuario }) => {
                 Contacta al administrador
               </button>
             </p>
-            
+
             <ModalContacto modalAbierto={modalContacto} setModalAbierto={setModalContacto} />
 
           </div>
@@ -327,7 +325,7 @@ const Login = ({ setUsuario }) => {
 
       </div>
 
-      
+
 
 
     </div>

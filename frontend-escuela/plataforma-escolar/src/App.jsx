@@ -15,9 +15,7 @@ function App() {
   return (
     <BrowserRouter>
       <div className="flex min-h-screen bg-red text-white">
-        
         {usuario && <Sidebar usuario={usuario} setUsuario={setUsuario} />}
-        
         <main className={`flex-1 ${usuario ? 'p-8' : ''}`}>
           <AppNav usuario={usuario} setUsuario={setUsuario} />
         </main>

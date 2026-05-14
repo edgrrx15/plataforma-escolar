@@ -27,7 +27,7 @@ const Sidebar = ({ usuario, setUsuario }) => {
   return (
     <>
       {/* TOPBAR MÓVIL */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-20 bg-[#f8fbff]/90 backdrop-blur-xl border-b border-[#e4eaf3] px-5 flex items-center justify-between">
+      <header className="lg:hidden fixed top-0 left-0 right-0 z-40 h-20  backdrop-blur-xl border-b border-[#e4eaf3] px-5 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-[#1d6ff2] flex items-center justify-center shadow-lg shadow-blue-500/25">
             <GraduationCap className="text-white" size={27} />
@@ -204,10 +204,9 @@ export function EnlaceSidebar({ to, icon, children, cerrarMenu }) {
         to={to} // ruta a la que se dirige el enlace
         onClick={cerrarMenu}
         className={({ isActive }) =>
-          `flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition-all ${
-            isActive
-              ? 'bg-[#1d6ff2] text-white shadow-lg shadow-blue-500/25'
-              : 'text-[#667394] hover:bg-white hover:text-[#1d6ff2] hover:shadow-sm'
+          `flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition-all ${isActive
+            ? 'bg-[#1d6ff2] text-white shadow-lg shadow-blue-500/25'
+            : 'text-[#667394] hover:bg-white hover:text-[#1d6ff2] hover:shadow-sm'
           }`
         }
       >

@@ -2,12 +2,12 @@
 
 /* Estilos globales básicos */
 :root {
-  color-scheme: light; /* Esto ayuda a que los scrollbars y fondos se vean oscuros tipo Apple */
+  color-scheme: light;
+  /* Esto ayuda a que los scrollbars y fondos se vean oscuros tipo Apple */
 }
 
 body {
   margin: 0;
-  background-color: #d3d3d3;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "SF Pro Display", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
