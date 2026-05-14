@@ -105,7 +105,7 @@ const Sidebar = ({ usuario, setUsuario }) => {
 
             <div className="overflow-hidden">
               <p className="font-bold truncate">
-                {usuario?.nombre || 'Usuario'}
+                {usuario?.rol || 'Usuario'}
               </p>
               <p className="text-sm text-[#667394] truncate">
                 {usuario?.email || 'Cuenta institucional'}
@@ -195,11 +195,13 @@ const Sidebar = ({ usuario, setUsuario }) => {
 
 export default Sidebar;
 
+//se pasan como props, to para la ruta, icon para el icono a mostrar y cerrarMenu para cerrar el menu en móvil al hacer click en un enlace
 export function EnlaceSidebar({ to, icon, children, cerrarMenu }) {
   return (
+    //se hace una lista de enlaces, cada uno es un NavLink que se estiliza dependiendo de si está activo o no, y al hacer click se cierra el menu en móvil
     <li>
       <NavLink
-        to={to}
+        to={to} // ruta a la que se dirige el enlace
         onClick={cerrarMenu}
         className={({ isActive }) =>
           `flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition-all ${

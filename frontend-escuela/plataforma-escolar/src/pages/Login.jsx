@@ -11,13 +11,22 @@ import {
   BookOpen,
   ClipboardCheck,
   BarChart3,
+  X,
+  Send,
 } from 'lucide-react';
+import ModalRecuperar from '../components/ModalRecuperar';
+import ModalContacto from '../components/ModalContacto';
 
 const Login = ({ setUsuario }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [tipoUsuario, setTipoUsuario] = useState('estudiante');
   const [error, setError] = useState('');
+  const [modalContacto, setModalContacto] = useState(false);
+  const [mostrarPassword, setMostrarPassword] = useState(true);
+  const [mostrarOlvido, setMostrarOlvido] = useState(false);
+  
+
   const navigate = useNavigate();
 
   const manejarLogin = async (e) => {
@@ -32,7 +41,7 @@ const Login = ({ setUsuario }) => {
       });
 
       const datos = await respuesta.json();
-
+      console.log('Respuesta del servidor:', datos);
       if (datos.success) {
         localStorage.setItem('usuario', JSON.stringify(datos.usuario));
         setUsuario(datos.usuario);
@@ -44,6 +53,11 @@ const Login = ({ setUsuario }) => {
       setError('Error al conectar con el servidor');
     }
   };
+
+
+  const toggleMostrarPassword = () => {
+    setMostrarPassword((prev) => !prev);
+  }
 
   return (
     <div className="min-h-screen bg-[#f7faff] text-[#0f1b3d] flex items-center justify-center overflow-hidden">
@@ -124,7 +138,7 @@ const Login = ({ setUsuario }) => {
             </div>
           </div>
 
-          {/* Ilustración decorativa estilo suave */}
+          {/* Ilustración decorativa */}
           <div className="relative z-10 h-64">
             <div className="absolute left-4 bottom-0 w-48 h-56 rounded-[42px] bg-gradient-to-br from-white to-[#dbeaff] border border-white shadow-2xl shadow-blue-200/70 rotate-[-4deg]">
               <div className="absolute top-[-35px] left-12 w-24 h-20 rounded-t-full border-[12px] border-[#7aa8ff] border-b-0"></div>
@@ -169,13 +183,13 @@ const Login = ({ setUsuario }) => {
                 type="button"
                 onClick={() => setTipoUsuario('docente')}
                 className={`flex items-center justify-center gap-3 pb-5 font-semibold cursor-pointer transition-all ${
-                  tipoUsuario === 'docente'
+                  tipoUsuario === 'docente' 
                     ? 'text-[#1d6ff2] border-b-2 border-[#1d6ff2]'
                     : 'text-[#667394] border-b-2 border-transparent'
                 }`}
               >
                 <CalendarCheck size={23} />
-                Docente
+                Administrativos
               </button>
             </div>
 
@@ -209,13 +223,12 @@ const Login = ({ setUsuario }) => {
                 <label className="block text-[#14264b] font-medium mb-3">
                   Contraseña
                 </label>
-
+                {mostrarPassword ? (
                 <div className="relative">
                   <Lock
                     size={24}
                     className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5f6f91]"
                   />
-
                   <input
                     type="password"
                     placeholder="Ingresa tu contraseña"
@@ -227,10 +240,33 @@ const Login = ({ setUsuario }) => {
 
                   <Eye
                     size={24}
-                    className="absolute right-5 top-1/2 -translate-y-1/2 text-[#5f6f91]"
-                    
+                    className="absolute right-5 top-1/2 -translate-y-1/2 text-[#5f6f91] cursor-pointer"
+                    onClick={toggleMostrarPassword}
                   />
                 </div>
+                ) : (
+                  <div className="relative">
+                                      <Lock
+                    size={24}
+                    className="absolute left-5 top-1/2 -translate-y-1/2 text-[#5f6f91]"
+                  />
+                    <input
+                      type="text"
+                      placeholder="Ingresa tu contraseña"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full h-16 pl-14 pr-14 bg-white text-[#14264b] border border-[#dce3ee] rounded-2xl outline-none transition-all placeholder:text-[#a7b1c4] focus:border-[#1d6ff2] focus:ring-4 focus:ring-blue-100"
+                      required
+                    />
+
+                    <EyeOff
+                      size={24}
+                      onClick={toggleMostrarPassword} 
+                      className="absolute right-5 top-1/2 -translate-y-1/2 text-[#5f6f91] cursor-pointer"
+                    />
+                  </div>
+                )}
+
               </div>
 
               {/* Opciones */}
@@ -245,11 +281,16 @@ const Login = ({ setUsuario }) => {
 
                 <button
                   type="button"
+                  onClick={() => setMostrarOlvido(true)}
                   className="text-[#1d6ff2] font-medium hover:underline"
                 >
                   ¿Olvidaste tu contraseña?
                 </button>
               </div>
+
+              <ModalRecuperar modalAbierto={mostrarOlvido} setModalAbierto={setMostrarOlvido} />
+
+              
 
               {/* Error */}
               {error && (
@@ -261,25 +302,34 @@ const Login = ({ setUsuario }) => {
               {/* Botón */}
               <button
                 type="submit"
-                className="w-full  cursor-pointer h-16 bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98]"
+                className="w-full cursor-pointer h-16 bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-500/25 active:scale-[0.98]"
               >
                 Iniciar sesión
               </button>
-
 
             </form>
 
             <p className="text-center text-[#667394] mt-10">
               ¿No tienes cuenta?{' '}
-              <span className="text-[#1d6ff2] font-medium cursor-pointer hover:underline">
+              <button
+                type="button"
+                onClick={() => setModalContacto(true)}
+                className="text-[#1d6ff2] font-medium cursor-pointer hover:underline"
+              >
                 Contacta al administrador
-              </span>
+              </button>
             </p>
+            
+            <ModalContacto modalAbierto={modalContacto} setModalAbierto={setModalContacto} />
 
           </div>
         </section>
 
       </div>
+
+      
+
+
     </div>
   );
 };
