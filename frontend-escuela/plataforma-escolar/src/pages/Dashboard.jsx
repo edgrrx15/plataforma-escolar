@@ -33,9 +33,17 @@ const Dashboard = () => {
       try {
         const usuarioStr = localStorage.getItem('usuario');
         const usuarioObj = usuarioStr ? JSON.parse(usuarioStr) : null;
-        const emailParam = usuarioObj && usuarioObj.email ? `?email=${encodeURIComponent(usuarioObj.email)}` : '';
         
-        const response = await fetch(`http://localhost:3000/api/dashboard${emailParam}`);
+        let queryParams = '';
+        if (usuarioObj) {
+          const params = new URLSearchParams();
+          if (usuarioObj.email) params.append('email', usuarioObj.email);
+          if (usuarioObj.id_estudiante) params.append('estudianteId', usuarioObj.id_estudiante);
+          if (usuarioObj.id_profesor) params.append('profesorId', usuarioObj.id_profesor);
+          queryParams = `?${params.toString()}`;
+        }
+        
+        const response = await fetch(`http://localhost:3000/api/dashboard${queryParams}`);
         const result = await response.json();
         setData(result);
       } catch (error) {

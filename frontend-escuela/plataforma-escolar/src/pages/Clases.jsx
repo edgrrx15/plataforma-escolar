@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import {
   Plus,
+  Link as LinkIcon,
   BookOpen,
   Users,
   Clock3,
@@ -18,10 +19,17 @@ import {
   FileText,
 } from 'lucide-react'
 import ModalAgregarClase from '../components/ModalAgregarClase'
+import ModalUnirseClase from '../components/ModalUnirseClase'
 import ClaseCard from '../components/ClaseCard'
 
 function Clases() {
   const [modalAbierto, setModalAbierto] = useState(false)
+  const [modalUnirseAbierto, setModalUnirseAbierto] = useState(false)
+  const usuarioInfo = JSON.parse(localStorage.getItem('usuario') || '{}');
+
+  const handleUnirse = () => {
+    setModalUnirseAbierto(true);
+  }
 
   const clases = [
     {
@@ -90,17 +98,33 @@ function Clases() {
             <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-red-500"></div>
           </button>
 
-          <button
-            onClick={() => setModalAbierto(true)}
-            className="h-14 px-6 rounded-2xl bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3"
-          >
-            <Plus size={22} />
-            Agregar clase
-          </button>
+          {usuarioInfo.rol !== 'estudiante' ? (
+            <button
+              onClick={() => setModalAbierto(true)}
+              className="h-14 px-6 rounded-2xl bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3"
+            >
+              <Plus size={22} />
+              Agregar clase
+            </button>
+          ) : (
+            <button
+              onClick={handleUnirse}
+              className="h-14 px-6 rounded-2xl bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3"
+            >
+              <LinkIcon size={22} />
+              Unirse a clase
+            </button>
+          )}
 
           <ModalAgregarClase
             modalAbierto={modalAbierto}
             setModalAbierto={setModalAbierto}
+          />
+          
+          <ModalUnirseClase
+            modalAbierto={modalUnirseAbierto}
+            setModalAbierto={setModalUnirseAbierto}
+            onClaseUnida={() => window.location.reload()}
           />
 
         </div>

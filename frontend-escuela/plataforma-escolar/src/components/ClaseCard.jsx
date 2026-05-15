@@ -1,15 +1,27 @@
 import React from 'react'
-import { useState } from 'react'
-import { useEffect } from 'react'
-import { BookOpen, MoreVertical, Users, Clock3, FileText, BarChart3 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { BookOpen, MoreVertical, Users, Clock3, FileText, BarChart3, Trash2 } from 'lucide-react'
 
 const ClaseCard = () => {
     const [clases, setClases] = useState([]);
+    const [dropdownAbierto, setDropdownAbierto] = useState(null);
+    const navigate = useNavigate();
     //obtener las clases de la API
 
     useEffect(() => {
         const obtenerClases = async () => {
-            const response = await fetch('http://localhost:3000/api/clases');
+            const usuarioStr = localStorage.getItem('usuario');
+            const usuarioObj = usuarioStr ? JSON.parse(usuarioStr) : null;
+            let queryParams = '';
+            if (usuarioObj) {
+                const params = new URLSearchParams();
+                if (usuarioObj.id_estudiante) params.append('estudianteId', usuarioObj.id_estudiante);
+                if (usuarioObj.id_profesor) params.append('profesorId', usuarioObj.id_profesor);
+                queryParams = `?${params.toString()}`;
+            }
+            
+            const response = await fetch(`http://localhost:3000/api/clases${queryParams}`);
             const data = await response.json();
             setClases(data);
         };
@@ -29,7 +41,11 @@ const ClaseCard = () => {
                 const shadowColor = ['shadow-indigo-500/30', 'shadow-blue-500/30', 'shadow-teal-500/30', 'shadow-rose-500/30'][index % gradients.length];
 
                 return (
-                    <div key={index} className="group relative bg-white/80 backdrop-blur-xl border border-white/60 rounded-[32px] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1.5 transition-all duration-300 overflow-hidden">
+                    <div 
+                        key={index} 
+                        onClick={() => navigate(`/clases/${clase.id_clase}`)}
+                        className="group relative bg-white/80 backdrop-blur-xl border border-white/60 rounded-[32px] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1.5 transition-all duration-300 overflow-hidden cursor-pointer"
+                    >
                         {/* Decorative background blob */}
                         <div className={`absolute -top-24 -right-24 w-48 h-48 rounded-full ${bgGradient} opacity-5 blur-3xl group-hover:opacity-15 transition-opacity duration-500`}></div>
 
@@ -39,9 +55,38 @@ const ClaseCard = () => {
                             >
                                 <BookOpen className="text-white drop-shadow-sm" size={28} />
                             </div>
-                            <button className="w-10 h-10 rounded-full hover:bg-slate-50 flex items-center justify-center transition-colors text-slate-400 hover:text-slate-700">
-                                <MoreVertical size={20} />
-                            </button>
+                            <div className="relative">
+                                <button 
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDropdownAbierto(dropdownAbierto === index ? null : index);
+                                    }}
+                                    className="w-10 h-10 rounded-full hover:bg-slate-50 flex items-center justify-center transition-colors text-slate-400 hover:text-slate-700 relative z-20">
+                                    <MoreVertical size={20} />
+                                </button>
+                                
+                                {dropdownAbierto === index && (
+                                    <>
+                                        <div 
+                                            className="fixed inset-0 z-40"
+                                            onClick={() => setDropdownAbierto(null)}
+                                        ></div>
+                                        <div className="absolute right-0 top-12 mt-1 w-48 bg-white rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-slate-100 py-1.5 z-50 transform origin-top-right transition-all">
+                                            <button 
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    // Aquí iría la lógica para eliminar la materia para el estudiante
+                                                    console.log('Eliminar materia:', clase.id_clase);
+                                                    setDropdownAbierto(null);
+                                                }}
+                                                className="w-full px-4 py-2.5 text-left text-[14px] text-red-600 hover:bg-red-50 font-semibold transition-colors flex items-center gap-2.5">
+                                                <Trash2 size={16} />
+                                                Eliminar materia
+                                            </button>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
                         </div>
 
                         <div className="relative z-10 mt-6">

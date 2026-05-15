@@ -5,6 +5,8 @@ import Dashboard from '../pages/Dashboard'
 import Horario from '../pages/Horario'
 import Tareas from '../pages/Tareas'
 import Clases from '../pages/Clases'
+import DetalleClase from '../pages/DetalleClase'
+import DetallesTarea from '../pages/DetallesTarea'
 import PerfilUsuario from '../pages/PerfilUsuario'
 import Entregas from '../pages/Entregas'
 import Login from '../pages/Login'
@@ -27,6 +29,8 @@ function AppNav({ usuario, setUsuario }) {
       <Route path="/horario" element={usuario && usuario.rol !== 'administrador' ? <Horario /> : <Navigate to="/" />} />
       <Route path="/tareas" element={usuario && usuario.rol !== 'administrador' ? <Tareas /> : <Navigate to="/" />} />
       <Route path="/clases" element={usuario && usuario.rol !== 'administrador' ? <Clases /> : <Navigate to="/" />} />
+      <Route path="/clases/:id" element={usuario && usuario.rol !== 'administrador' ? <DetalleClase /> : <Navigate to="/" />} />
+      <Route path="/tareas/:id" element={usuario && usuario.rol !== 'administrador' ? <DetallesTarea /> : <Navigate to="/" />} />
       <Route path="/perfil" element={usuario && usuario.rol !== 'administrador' ? <PerfilUsuario /> : <Navigate to="/" />} />
 
       {/*las entregas solo saldra para los docentes
