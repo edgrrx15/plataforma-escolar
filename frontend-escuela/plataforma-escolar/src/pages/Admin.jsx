@@ -1,8 +1,11 @@
 import React from 'react'
 
 const Admin = () => {
+  //Aqui podra agregar docentes y alumnos
   return (
-    <div>Admin</div>
+    <div>
+      <h1>Panel de Administrador</h1>
+    </div>
   )
 }
 

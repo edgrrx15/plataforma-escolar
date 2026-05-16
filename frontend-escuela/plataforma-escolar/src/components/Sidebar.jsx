@@ -175,6 +175,17 @@ const Sidebar = ({ usuario, setUsuario }) => {
             >
               Perfil
             </EnlaceSidebar>
+
+            {/* Solo mostramos admin si el usuario es administrador */}
+            {usuario?.rol === 'admin' && (
+              <EnlaceSidebar
+                to="/admin"
+                icon={<User size={22} />}
+                cerrarMenu={() => setMenuAbierto(false)}
+              >
+                Admin
+              </EnlaceSidebar>
+            )}
           </ul>
         </nav>
 

@@ -14,16 +14,18 @@ import Login from '../pages/Login'
 function AppNav({ usuario, setUsuario }) {
   return (
     <Routes>
-      <Route 
-        path="/" 
-        element={!usuario ? <Login setUsuario={setUsuario} /> : <Navigate to="/dashboard" />} 
+
+
+      <Route
+        path="/"
+        element={!usuario ? <Login setUsuario={setUsuario} /> : <Navigate to="/dashboard" />}
       />
 
-      <Route 
-        path="/dashboard" 
-        element={usuario ? <Dashboard usuario={usuario} /> : <Navigate to="/" />} 
+      <Route
+        path="/dashboard"
+        element={usuario ? <Dashboard usuario={usuario} /> : <Navigate to="/" />}
       />
-      
+
       {/* Rutas a las que el administrador no tience acceso, */}
       <Route path="/calificaciones" element={usuario && usuario.rol !== 'administrador' ? <Calificaciones /> : <Navigate to="/" />} />
       <Route path="/horario" element={usuario && usuario.rol !== 'administrador' ? <Horario /> : <Navigate to="/" />} />
@@ -35,7 +37,7 @@ function AppNav({ usuario, setUsuario }) {
 
       {/*las entregas solo saldra para los docentes
       */}
-      {/* Si el usuario no es docente, redirigimos a dashboard */}  
+      {/* Si el usuario no es docente, redirigimos a dashboard */}
 
       <Route path="/entregas" element={usuario && usuario.rol === 'docente' ? <Entregas /> : <Navigate to="/" />} />
 

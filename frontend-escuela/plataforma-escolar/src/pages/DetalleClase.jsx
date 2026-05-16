@@ -10,7 +10,7 @@ import {
   MoreVertical,
   User
 } from 'lucide-react';
-import ModalCrearTarea from '../components/ModalCrearTarea';
+import ModalCrearTarea from '../Dialogs/ModalCrearTarea';
 
 const DetalleClase = () => {
   const { id } = useParams();

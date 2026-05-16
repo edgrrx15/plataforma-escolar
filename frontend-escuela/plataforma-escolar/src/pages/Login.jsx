@@ -14,12 +14,12 @@ import {
   X,
   Send,
 } from 'lucide-react';
-import ModalRecuperar from '../components/ModalRecuperar';
-import ModalContacto from '../components/ModalContacto';
+import ModalRecuperar from '../Dialogs/ModalRecuperar';
+import ModalContacto from '../Dialogs/ModalContacto';
 
 const Login = ({ setUsuario }) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('sasa@sasa.com');
+  const [password, setPassword] = useState('sasa');
   const [tipoUsuario, setTipoUsuario] = useState('estudiante');
   const [error, setError] = useState('');
   const [modalContacto, setModalContacto] = useState(false);
@@ -170,8 +170,8 @@ const Login = ({ setUsuario }) => {
                 type="button"
                 onClick={() => setTipoUsuario('estudiante')}
                 className={`flex items-center justify-center gap-3 pb-5 font-semibold cursor-pointer transition-all ${tipoUsuario === 'estudiante'
-                    ? 'text-[#1d6ff2] border-b-2 border-[#1d6ff2]'
-                    : 'text-[#667394] border-b-2 border-transparent'
+                  ? 'text-[#1d6ff2] border-b-2 border-[#1d6ff2]'
+                  : 'text-[#667394] border-b-2 border-transparent'
                   }`}
               >
                 <User size={23} />
@@ -182,8 +182,8 @@ const Login = ({ setUsuario }) => {
                 type="button"
                 onClick={() => setTipoUsuario('docente')}
                 className={`flex items-center justify-center gap-3 pb-5 font-semibold cursor-pointer transition-all ${tipoUsuario === 'docente'
-                    ? 'text-[#1d6ff2] border-b-2 border-[#1d6ff2]'
-                    : 'text-[#667394] border-b-2 border-transparent'
+                  ? 'text-[#1d6ff2] border-b-2 border-[#1d6ff2]'
+                  : 'text-[#667394] border-b-2 border-transparent'
                   }`}
               >
                 <CalendarCheck size={23} />

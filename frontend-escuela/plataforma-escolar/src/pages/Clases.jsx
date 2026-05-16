@@ -18,8 +18,8 @@ import {
   CheckCircle2,
   FileText,
 } from 'lucide-react'
-import ModalAgregarClase from '../components/ModalAgregarClase'
-import ModalUnirseClase from '../components/ModalUnirseClase'
+import ModalCrearClase from '../Dialogs/ModalCrearClase'
+import ModalUnirseClase from '../Dialogs/ModalUnirseClase'
 import ClaseCard from '../components/ClaseCard'
 
 function Clases() {
@@ -30,45 +30,6 @@ function Clases() {
   const handleUnirse = () => {
     setModalUnirseAbierto(true);
   }
-
-  const clases = [
-    {
-      nombre: 'Programación Web',
-      docente: 'Ing. Carlos Ruiz',
-      alumnos: 32,
-      horario: '08:00 AM - 10:00 AM',
-      tareas: 12,
-      promedio: '94%',
-      color: 'bg-blue-500',
-    },
-    {
-      nombre: 'Base de Datos',
-      docente: 'Mtro. Daniel Gómez',
-      alumnos: 28,
-      horario: '10:00 AM - 12:00 PM',
-      tareas: 8,
-      promedio: '89%',
-      color: 'bg-violet-500',
-    },
-    {
-      nombre: 'Matemáticas',
-      docente: 'Dra. Laura Martínez',
-      alumnos: 40,
-      horario: '01:00 PM - 03:00 PM',
-      tareas: 15,
-      promedio: '97%',
-      color: 'bg-emerald-500',
-    },
-    {
-      nombre: 'Redes',
-      docente: 'Ing. Luis Torres',
-      alumnos: 24,
-      horario: '03:00 PM - 05:00 PM',
-      tareas: 6,
-      promedio: '86%',
-      color: 'bg-orange-500',
-    },
-  ]
 
   return (
     <div className="min-h-screen bg-[#f5f8ff] p-6 lg:p-8">
@@ -104,7 +65,7 @@ function Clases() {
               className="h-14 px-6 rounded-2xl bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3"
             >
               <Plus size={22} />
-              Agregar clase
+              Crear clase
             </button>
           ) : (
             <button
@@ -116,11 +77,12 @@ function Clases() {
             </button>
           )}
 
-          <ModalAgregarClase
+          <ModalCrearClase
             modalAbierto={modalAbierto}
             setModalAbierto={setModalAbierto}
+            onClaseCreada={() => window.location.reload()}
           />
-          
+
           <ModalUnirseClase
             modalAbierto={modalUnirseAbierto}
             setModalAbierto={setModalUnirseAbierto}

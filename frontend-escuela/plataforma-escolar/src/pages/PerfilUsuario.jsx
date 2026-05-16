@@ -14,10 +14,12 @@ import {
   ClipboardCheck,
   Clock3,
 } from 'lucide-react';
+import ModalEditarPerfil from '../Dialogs/ModalEditarPerfil';
 
 const PerfilUsuario = () => {
   const [perfil, setPerfil] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mostrarModal, setMostrarModal] = useState(false);
 
   useEffect(() => {
     const fetchPerfil = async () => {
@@ -50,6 +52,19 @@ const PerfilUsuario = () => {
 
     fetchPerfil();
   }, []);
+
+  //se actualiza cada cambio que haya en la API
+  useEffect(() => {
+    if (perfil) {
+      const handleStorageChange = () => {
+        fetchPerfil();
+      };
+
+      window.addEventListener('storage', handleStorageChange);
+      return () => window.removeEventListener('storage', handleStorageChange);
+    }
+  }, [perfil]);
+
 
   if (loading) {
     return (
@@ -108,11 +123,21 @@ const PerfilUsuario = () => {
               <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-red-500"></div>
             </button>
 
-            <button className="w-full sm:w-auto px-6 py-3 bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5">
+            <button
+              className="w-full sm:w-auto px-6 py-3 bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5"
+              onClick={() => setMostrarModal(true)}
+            >
               Editar Perfil
             </button>
 
           </div>
+
+          <ModalEditarPerfil
+            mostrarModal={mostrarModal}
+            setMostrarModal={setMostrarModal}
+            perfil={perfil}
+            setPerfil={setPerfil}
+          />
 
         </div>
 
