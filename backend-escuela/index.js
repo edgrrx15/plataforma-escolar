@@ -142,7 +142,7 @@ app.post('/api/clases', async (req, res) => {
     try {
         // Generar codigo_acceso (6 caracteres alfanuméricos)
         const codigo_acceso = Math.random().toString(36).substring(2, 8).toUpperCase();
-        
+
         const query = 'INSERT INTO clases (id_mat, id_profesor, periodo, anio, codigo_acceso) VALUES ($1, $2, $3, $4, $5) RETURNING *';
         const resultado = await pool.query(query, [id_mat, id_profesor, periodo, anio, codigo_acceso]);
 
@@ -160,26 +160,26 @@ app.delete('/api/clases/:id_clase', async (req, res) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
-        
+
         // Eliminar dependencias si no hay ON DELETE CASCADE en la BD (por si acaso)
         // 1. Obtener las tareas de la clase para borrar sus entregas
         const tareasRes = await client.query('SELECT id_tarea FROM Tareas WHERE id_clase = $1', [id_clase]);
         for (const tarea of tareasRes.rows) {
-             await client.query('DELETE FROM Entregas WHERE id_tarea = $1', [tarea.id_tarea]);
+            await client.query('DELETE FROM Entregas WHERE id_tarea = $1', [tarea.id_tarea]);
         }
-        
+
         // 2. Eliminar Tareas
         await client.query('DELETE FROM Tareas WHERE id_clase = $1', [id_clase]);
-        
+
         // 3. Eliminar Inscripciones
         await client.query('DELETE FROM Inscripcion WHERE id_clase = $1', [id_clase]);
-        
+
         // 4. Eliminar Horarios
         await client.query('DELETE FROM Horario WHERE id_clase = $1', [id_clase]);
-        
+
         // 5. Eliminar la Clase
         await client.query('DELETE FROM Clases WHERE id_clase = $1', [id_clase]);
-        
+
         await client.query('COMMIT');
         res.json({ success: true, mensaje: 'Clase eliminada permanentemente' });
     } catch (error) {
@@ -247,7 +247,26 @@ app.delete('/api/clases/:id_clase/estudiantes/:id_estudiante', async (req, res) 
 // endpoint para el detalle de la clase
 app.get('/api/clases/:id/detalle', async (req, res) => {
     const { id } = req.params;
+    const { estudianteId, profesorId } = req.query;
+
     try {
+        // Verificar acceso
+        if (estudianteId) {
+            const checkQuery = 'SELECT * FROM Inscripcion WHERE id_clase = $1 AND id_estudiante = $2 AND estado = TRUE';
+            const checkRes = await pool.query(checkQuery, [id, estudianteId]);
+            if (checkRes.rows.length === 0) {
+                return res.status(403).json({ error: 'No estás inscrito en esta clase' });
+            }
+        } else if (profesorId) {
+            const checkQuery = 'SELECT * FROM Clases WHERE id_clase = $1 AND id_profesor = $2';
+            const checkRes = await pool.query(checkQuery, [id, profesorId]);
+            if (checkRes.rows.length === 0) {
+                return res.status(403).json({ error: 'No eres el docente de esta clase' });
+            }
+        } else {
+            return res.status(403).json({ error: 'Acceso denegado. Se requiere autenticación.' });
+        }
+
         // Información de la clase y profesor
         const claseQuery = `
             SELECT 
@@ -286,10 +305,23 @@ app.get('/api/clases/:id/detalle', async (req, res) => {
         `;
         const estudiantesRes = await pool.query(estudiantesQuery, [id]);
 
+        // Anuncios
+        const anunciosQuery = `
+            SELECT a.id_anuncio, a.titulo, a.descripcion, a.fecha_publicacion,
+                   d.nombre AS profesor_nombre, d.apellido AS profesor_apellido,
+                   SUBSTRING(d.nombre, 1, 1) || SUBSTRING(d.apellido, 1, 1) AS profesor_iniciales
+            FROM Anuncios a
+            LEFT JOIN Docentes d ON a.id_profesor = d.id_profesor
+            WHERE a.id_clase = $1
+            ORDER BY a.fecha_publicacion DESC
+        `;
+        const anunciosRes = await pool.query(anunciosQuery, [id]);
+
         res.json({
             ...claseInfo,
             tareas: tareasRes.rows,
-            estudiantes: estudiantesRes.rows
+            estudiantes: estudiantesRes.rows,
+            anuncios: anunciosRes.rows
         });
     } catch (error) {
         console.error('Error al obtener el detalle de la clase:', error);
@@ -300,7 +332,34 @@ app.get('/api/clases/:id/detalle', async (req, res) => {
 // endpoint para detalles de una tarea específica
 app.get('/api/tareas/:id', async (req, res) => {
     const { id } = req.params;
+    const { estudianteId, profesorId } = req.query;
+
     try {
+        // Primero obtener el id_clase de la tarea
+        const tareaQuery = 'SELECT id_clase FROM Tareas WHERE id_tarea = $1';
+        const tareaRes = await pool.query(tareaQuery, [id]);
+        if (tareaRes.rows.length === 0) {
+            return res.status(404).json({ error: 'Tarea no encontrada' });
+        }
+        const id_clase = tareaRes.rows[0].id_clase;
+
+        // Verificar acceso
+        if (estudianteId) {
+            const checkQuery = 'SELECT * FROM Inscripcion WHERE id_clase = $1 AND id_estudiante = $2 AND estado = TRUE';
+            const checkRes = await pool.query(checkQuery, [id_clase, estudianteId]);
+            if (checkRes.rows.length === 0) {
+                return res.status(403).json({ error: 'No tienes acceso a las tareas de esta clase' });
+            }
+        } else if (profesorId) {
+            const checkQuery = 'SELECT * FROM Clases WHERE id_clase = $1 AND id_profesor = $2';
+            const checkRes = await pool.query(checkQuery, [id_clase, profesorId]);
+            if (checkRes.rows.length === 0) {
+                return res.status(403).json({ error: 'No eres el docente de esta clase' });
+            }
+        } else {
+            return res.status(403).json({ error: 'Acceso denegado. Se requiere autenticación.' });
+        }
+
         const query = `
             SELECT t.*, c.codigo_acceso, m.nombre AS materia_nombre, 
                    d.nombre AS profesor_nombre, d.apellido AS profesor_apellido
@@ -487,6 +546,44 @@ app.put('/api/entregas/:id/calificar', async (req, res) => {
     } catch (error) {
         console.error('Error al calificar entrega:', error);
         res.status(500).json({ error: 'Error al calificar' });
+    }
+});
+
+
+// ANUNCIOS
+app.get('/api/clases/:id/anuncios', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const query = `
+            SELECT a.id_anuncio, a.titulo, a.descripcion, a.fecha_publicacion,
+                   d.nombre AS profesor_nombre, d.apellido AS profesor_apellido,
+                   SUBSTRING(d.nombre, 1, 1) || SUBSTRING(d.apellido, 1, 1) AS profesor_iniciales
+            FROM Anuncios a
+            LEFT JOIN Docentes d ON a.id_profesor = d.id_profesor
+            WHERE a.id_clase = $1
+            ORDER BY a.fecha_publicacion DESC
+        `;
+        const resultado = await pool.query(query, [id]);
+        res.json(resultado.rows);
+    } catch (error) {
+        console.error('Error al obtener anuncios:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+app.post('/api/anuncios', async (req, res) => {
+    const { id_clase, titulo, descripcion, id_profesor } = req.body;
+    try {
+        const query = `
+            INSERT INTO Anuncios (id_clase, titulo, descripcion, id_profesor)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id_anuncio, fecha_publicacion
+        `;
+        const resultado = await pool.query(query, [id_clase, titulo, descripcion, id_profesor]);
+        res.status(201).json({ success: true, anuncio: resultado.rows[0] });
+    } catch (error) {
+        console.error('Error al crear anuncio:', error);
+        res.status(500).json({ error: 'Error al crear anuncio' });
     }
 });
 
@@ -702,24 +799,7 @@ app.put('/api/perfil', upload.single('foto'), async (req, res) => {
 });
 
 
-//agregar anuncio en clase y que se muestre en el dashboard
 
-app.post('/api/clases/:id/anuncios', async (req, res) => {
-    const { id } = req.params;
-    const { titulo, contenido, id_profesor } = req.body;
-    try {
-        const query = `
-            INSERT INTO Anuncios (id_clase, titulo, contenido, id_profesor)
-            VALUES ($1, $2, $3, $4)
-            RETURNING *;
-        `;
-        const resultado = await pool.query(query, [id, titulo, contenido, id_profesor]);
-        res.json({ success: true, anuncio: resultado.rows[0] });
-    } catch (error) {
-        console.error('Error al agregar anuncio:', error);
-        res.status(500).json({ error: 'Error al agregar anuncio' });
-    }
-});
 
 
 app.listen(port, () => {
