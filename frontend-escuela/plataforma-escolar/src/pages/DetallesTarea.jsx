@@ -39,7 +39,11 @@ const DetallesTarea = () => {
     const fetchInfo = async () => {
       try {
         // Cargar detalles de la tarea
-        const resTarea = await fetch(`http://localhost:3000/api/tareas/${id}`);
+        const queryParams = new URLSearchParams();
+        if (usuarioInfo.id_estudiante) queryParams.append('estudianteId', usuarioInfo.id_estudiante);
+        if (usuarioInfo.id_profesor) queryParams.append('profesorId', usuarioInfo.id_profesor);
+
+        const resTarea = await fetch(`http://localhost:3000/api/tareas/${id}?${queryParams.toString()}`);
         if (!resTarea.ok) throw new Error('Tarea no encontrada');
         const dataTarea = await resTarea.json();
         setTareaData(dataTarea);

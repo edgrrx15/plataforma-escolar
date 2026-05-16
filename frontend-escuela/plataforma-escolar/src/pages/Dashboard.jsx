@@ -11,8 +11,12 @@ import {
   TrendingUp,
   MoreVertical
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+
+
 
   const [data, setData] = useState({
     nombre_usuario: '',
@@ -74,6 +78,16 @@ const Dashboard = () => {
   const eventos = data.eventos;
   const stats = data.stats;
 
+  //Continuar con la clase, ira a dicha clase, ira a detalles de la clase
+  const handleContinuarConClase = (id_clase) => {
+    localStorage.setItem('clase_seleccionada', JSON.stringify(id_clase));
+    navigate(`/clases/${id_clase}`);
+  }
+
+  const handleContinuarTarea = (id_tarea) => {
+    localStorage.setItem('tarea_seleccionada', JSON.stringify(id_tarea));
+    navigate(`/tareas/${id_tarea}`);
+  }
   return (
     <div className="min-h-screen bg-slate-50 p-6 lg:p-8 relative overflow-hidden">
       {/* Background Decorative Blobs */}
@@ -142,7 +156,9 @@ const Dashboard = () => {
                 <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Tus materias</h2>
                 <p className="text-slate-500 mt-1 font-medium">Continúa aprendiendo en tus cursos activos.</p>
               </div>
-              <button className="px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200 transition-colors">
+              <button
+                onClick={() => navigate('/clases')}
+                className=" cursor-pointer px-5 py-2.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm hover:bg-slate-200 transition-colors">
                 Ver todas
               </button>
             </div>
@@ -155,12 +171,12 @@ const Dashboard = () => {
               ) : (
                 materias.map((materia, index) => (
                   <div key={index} className="group relative bg-white/90 border border-slate-100 rounded-[28px] p-6 hover:shadow-[0_15px_30px_rgb(0,0,0,0.06)] hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-                    <div className={`absolute -top-16 -right-16 w-32 h-32 rounded-full ${materia.color} opacity-5 blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
+                    <div on className={`absolute -top-16 -right-16 w-32 h-32 rounded-full ${materia.color} opacity-5 blur-2xl group-hover:opacity-15 transition-opacity duration-500`}></div>
 
                     <div className="relative z-10">
                       <div className="flex items-start justify-between mb-6">
                         <div className="flex flex-col gap-1">
-                          <h3 className="text-[22px] font-extrabold text-slate-800 leading-tight group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-800 group-hover:to-slate-500 transition-colors">
+                          <h3 className="text-[22px] font-extrabold text-slate-800 leading-tight group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-slate-800 group-hover:to-slate-500 transition-colors">
                             {materia.nombre}
                           </h3>
                           <p className="text-slate-500 text-[14px] font-medium">{materia.docente}</p>
@@ -180,7 +196,8 @@ const Dashboard = () => {
                         </div>
                       </div>
 
-                      <button className="mt-6 w-full py-3.5 rounded-xl border-2 border-slate-100 text-slate-700 font-bold hover:bg-slate-50 hover:border-slate-200 transition-all">
+                      <button className="cursor-pointer mt-6 w-full py-3.5 rounded-xl border-2 border-slate-100 text-slate-700 font-bold hover:bg-slate-50 hover:border-slate-200 transition-all"
+                        onClick={() => handleContinuarConClase(materia.id_clase)}>
                         Continuar curso
                       </button>
                     </div>
@@ -206,7 +223,7 @@ const Dashboard = () => {
                 </div>
               ) : (
                 tareas.map((tarea, index) => (
-                  <div key={index} className="group bg-white border border-slate-100 rounded-[24px] p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-5 hover:border-indigo-100 hover:shadow-[0_10px_20px_rgb(0,0,0,0.03)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
+                  <div onClick={() => handleContinuarTarea(tarea.id_tarea)} key={index} className="group bg-white border border-slate-100 rounded-[24px] p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-5 hover:border-indigo-100 hover:shadow-[0_10px_20px_rgb(0,0,0,0.03)] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100/50 flex items-center justify-center group-hover:bg-indigo-600 group-hover:scale-105 transition-all duration-300 shrink-0">
                         <ClipboardCheck className="text-indigo-600 group-hover:text-white transition-colors" size={26} />
