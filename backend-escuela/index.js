@@ -137,7 +137,7 @@ app.get('/api/materias', async (req, res) => {
 });
 
 //endpoint para crear clases
-app.post('/api/clases', async (req, res) => {
+app.post('/api/clases ', async (req, res) => {
     const { id_mat, id_profesor, periodo, anio } = req.body;
     try {
         // Generar codigo_acceso (6 caracteres alfanuméricos)
@@ -379,6 +379,49 @@ app.get('/api/tareas/:id', async (req, res) => {
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
+
+// endpoint para obtener todas las tareas de un usuario
+app.get('/api/tareas', async (req, res) => {
+    const { estudianteId, profesorId } = req.query;
+    try {
+        if (estudianteId) {
+            const query = `
+                SELECT 
+                    t.id_tarea, t.titulo, t.descripcion, t.fecha_vencimiento, t.puntos_maximos,
+                    c.id_clase, m.nombre AS materia_nombre, 
+                    e.id_entrega, e.calificacion, e.fecha_envio
+                FROM Tareas t
+                JOIN Clases c ON t.id_clase = c.id_clase
+                JOIN Materia m ON c.id_mat = m.id_mat
+                JOIN Inscripcion i ON c.id_clase = i.id_clase
+                LEFT JOIN Entregas e ON t.id_tarea = e.id_tarea AND e.id_estudiante = $1
+                WHERE i.id_estudiante = $1 AND i.estado = TRUE
+                ORDER BY t.fecha_vencimiento ASC NULLS LAST;
+            `;
+            const result = await pool.query(query, [estudianteId]);
+            res.json(result.rows);
+        } else if (profesorId) {
+            const query = `
+                SELECT 
+                    t.id_tarea, t.titulo, t.descripcion, t.fecha_vencimiento, t.puntos_maximos,
+                    c.id_clase, m.nombre AS materia_nombre
+                FROM Tareas t
+                JOIN Clases c ON t.id_clase = c.id_clase
+                JOIN Materia m ON c.id_mat = m.id_mat
+                WHERE c.id_profesor = $1
+                ORDER BY t.fecha_vencimiento ASC NULLS LAST;
+            `;
+            const result = await pool.query(query, [profesorId]);
+            res.json(result.rows);
+        } else {
+            res.status(400).json({ error: 'Se requiere estudianteId o profesorId' });
+        }
+    } catch (error) {
+        console.error('Error al obtener la lista global de tareas:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
 
 // endpoint (docente) para crear una tarea
 app.post('/api/tareas', async (req, res) => {
@@ -690,6 +733,126 @@ app.get('/api/dashboard', async (req, res) => {
     } catch (error) {
         console.error('Error al obtener datos del dashboard:', error);
         res.status(500).json({ error: 'Error al obtener los datos del dashboard' });
+    }
+});
+
+
+// endpoint para obtener las calificaciones
+app.get('/api/calificacion', async (req, res) => {
+    try {
+        const { id_estudiante, id_profesor } = req.query;
+
+        if (id_estudiante) {
+            const query = `
+                SELECT 
+                    cal.id_calificacion,
+                    cal.id_estudiante,
+                    cal.id_clase,
+                    m.nombre AS materia_nombre,
+                    cal.calificacion,
+                    cal.observaciones
+                FROM Calificaciones cal
+                JOIN Clases c ON cal.id_clase = c.id_clase
+                JOIN Materia m ON c.id_mat = m.id_mat
+                WHERE cal.id_estudiante = $1
+            `;
+            const result = await pool.query(query, [id_estudiante]);
+            res.json(result.rows);
+        } else if (id_profesor) {
+            const query = `
+                SELECT 
+                    cal.id_calificacion,
+                    cal.id_estudiante,
+                    cal.id_clase,
+                    m.nombre AS materia_nombre,
+                    cal.calificacion,
+                    cal.observaciones,
+                    e.nombre AS estudiante_nombre,
+                    e.apellido AS estudiante_apellido
+                FROM Calificaciones cal
+                JOIN Clases c ON cal.id_clase = c.id_clase
+                JOIN Materia m ON c.id_mat = m.id_mat
+                JOIN Estudiantes e ON cal.id_estudiante = e.id_estudiante
+                WHERE c.id_profesor = $1
+            `;
+            const result = await pool.query(query, [id_profesor]);
+            res.json(result.rows);
+        } else {
+            res.status(400).json({ error: 'Se requiere id_estudiante o id_profesor' });
+        }
+    } catch (error) {
+        console.error('Error al obtener las calificaciones:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// Registrar calificación
+app.post('/api/calificacion', async (req, res) => {
+    const { id_estudiante, id_clase, calificacion, observaciones } = req.body;
+    try {
+        const query = `
+            INSERT INTO Calificaciones (id_estudiante, id_clase, calificacion, observaciones)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *
+        `;
+        const result = await pool.query(query, [id_estudiante, id_clase, calificacion, observaciones]);
+        res.status(201).json({ success: true, calificacion: result.rows[0] });
+    } catch (error) {
+        console.error('Error al registrar calificacion:', error);
+        res.status(500).json({ error: 'Error al registrar la calificación' });
+    }
+});
+
+// Modificar calificación
+app.put('/api/calificacion/:id', async (req, res) => {
+    const { id } = req.params;
+    const { calificacion, observaciones } = req.body;
+    try {
+        const query = `
+            UPDATE Calificaciones
+            SET calificacion = $1, observaciones = $2
+            WHERE id_calificacion = $3
+            RETURNING *
+        `;
+        const result = await pool.query(query, [calificacion, observaciones, id]);
+        res.json({ success: true, calificacion: result.rows[0] });
+    } catch (error) {
+        console.error('Error al modificar calificacion:', error);
+        res.status(500).json({ error: 'Error al modificar la calificación' });
+    }
+});
+
+// Eliminar calificación
+app.delete('/api/calificacion/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const query = 'DELETE FROM Calificaciones WHERE id_calificacion = $1 RETURNING *';
+        const result = await pool.query(query, [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Calificación no encontrada' });
+        }
+        res.json({ success: true, mensaje: 'Calificación eliminada' });
+    } catch (error) {
+        console.error('Error al eliminar calificacion:', error);
+        res.status(500).json({ error: 'Error al eliminar la calificación' });
+    }
+});
+
+// Obtener estudiantes de una clase
+app.get('/api/clases/:id/estudiantes', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const query = `
+            SELECT e.id_estudiante, e.nombre, e.apellido
+            FROM Inscripcion i
+            JOIN Estudiantes e ON i.id_estudiante = e.id_estudiante
+            WHERE i.id_clase = $1 AND i.estado = TRUE
+        `;
+        const result = await pool.query(query, [id]);
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Error al obtener estudiantes de la clase:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 
