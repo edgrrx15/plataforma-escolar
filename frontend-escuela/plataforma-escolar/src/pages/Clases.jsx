@@ -38,10 +38,6 @@ function Clases() {
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6 mb-10">
 
         <div>
-          <p className="text-[#5f6f91] text-lg font-medium">
-            Gestión académica
-          </p>
-
           <h1 className="text-4xl lg:text-5xl font-extrabold text-[#08183f] mt-2 tracking-tight">
             Clases
           </h1>
