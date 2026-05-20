@@ -212,7 +212,70 @@ app.post('/api/clases/unirse', async (req, res) => {
             return res.status(400).json({ success: false, error: 'Ya estás inscrito en esta clase' });
         }
 
-        // Inscribir
+        // --- VALIDACIÓN DE CHOQUES DE HORARIO ---
+        // 1. Obtener los horarios de la materia a la que se quiere unir
+        const targetSchedulesQuery = `
+            SELECT h.dia_semana, h.hora_inicio, h.hora_fin, m.nombre AS materia_nombre
+            FROM Horario h
+            JOIN Clases c ON h.id_clase = c.id_clase
+            JOIN Materia m ON c.id_mat = m.id_mat
+            WHERE h.id_clase = $1
+        `;
+        const targetSchedulesRes = await pool.query(targetSchedulesQuery, [id_clase]);
+        const targetSchedules = targetSchedulesRes.rows;
+
+        // 2. Obtener los horarios de las materias en las que ya está inscrito el estudiante
+        const studentSchedulesQuery = `
+            SELECT h.dia_semana, h.hora_inicio, h.hora_fin, m.nombre AS materia_nombre
+            FROM Inscripcion i
+            JOIN Clases c ON i.id_clase = c.id_clase
+            JOIN Horario h ON c.id_clase = h.id_clase
+            JOIN Materia m ON c.id_mat = m.id_mat
+            WHERE i.id_estudiante = $1 AND i.estado = TRUE
+        `;
+        const studentSchedulesRes = await pool.query(studentSchedulesQuery, [id_estudiante]);
+        const studentSchedules = studentSchedulesRes.rows;
+
+        // Funciones auxiliares para normalizar y comparar
+        const normalizeDay = (day) => {
+            if (!day) return '';
+            return day.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, ""); // Remueve acentos (ej. Miércoles -> miercoles)
+        };
+
+        const timeToMinutes = (timeStr) => {
+            if (!timeStr) return 0;
+            const parts = timeStr.split(':');
+            const hours = parseInt(parts[0], 10) || 0;
+            const minutes = parseInt(parts[1], 10) || 0;
+            return hours * 60 + minutes;
+        };
+
+        // 3. Comparar cada bloque para ver si se cruzan en día y hora
+        for (const targetSlot of targetSchedules) {
+            const dayA = normalizeDay(targetSlot.dia_semana);
+            const startA = timeToMinutes(targetSlot.hora_inicio);
+            const endA = timeToMinutes(targetSlot.hora_fin);
+
+            for (const existingSlot of studentSchedules) {
+                const dayB = normalizeDay(existingSlot.dia_semana);
+                if (dayA === dayB) {
+                    const startB = timeToMinutes(existingSlot.hora_inicio);
+                    const endB = timeToMinutes(existingSlot.hora_fin);
+
+                    // Si se solapan: startA < endB Y startB < endA
+                    if (startA < endB && startB < endA) {
+                        return res.status(400).json({
+                            success: false,
+                            error: `Su horario choca con otra materia: ya estás inscrito en "${existingSlot.materia_nombre}" el día ${targetSlot.dia_semana} de ${existingSlot.hora_inicio.slice(0, 5)} a ${existingSlot.hora_fin.slice(0, 5)}.`
+                        });
+                    }
+                }
+            }
+        }
+
+        // Inscribir si pasa todas las validaciones
         const insertQuery = 'INSERT INTO Inscripcion (id_clase, id_estudiante, estado) VALUES ($1, $2, TRUE)';
         await pool.query(insertQuery, [id_clase, id_estudiante]);
 
@@ -222,9 +285,6 @@ app.post('/api/clases/unirse', async (req, res) => {
         res.status(500).json({ success: false, error: 'Error interno del servidor' });
     }
 });
-
-//Para que el usuario elimine o se salga de la clase
-
 
 
 
