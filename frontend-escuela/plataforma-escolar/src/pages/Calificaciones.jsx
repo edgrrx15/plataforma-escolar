@@ -176,8 +176,8 @@ function Calificaciones() {
 
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center justify-center font-bold px-3 py-1 rounded-full text-[14px] ${Number(calif.calificacion) >= 70
-                            ? 'bg-emerald-50 text-emerald-700'
-                            : 'bg-rose-50 text-rose-700'
+                          ? 'bg-emerald-50 text-emerald-700'
+                          : 'bg-rose-50 text-rose-700'
                           }`}>
                           {calif.calificacion}
                         </span>
