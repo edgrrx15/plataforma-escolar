@@ -13,12 +13,14 @@ import {
   AlertCircle,
   ArrowRight
 } from 'lucide-react';
+import { GooeyInput } from '../components/Buscador';
 
 function Horario() {
   const [clases, setClases] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [vista, setVista] = useState('agenda'); // 'agenda' o 'tabla'
+  const [textoBusqueda, setTextoBusqueda] = useState('');
   
   // Mapeo de días para obtener el día por defecto según la fecha actual
   const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
@@ -105,8 +107,21 @@ function Horario() {
     'domingo': 7
   };
 
+  // Filtrar por texto de búsqueda
+  const bloquesFiltradosBusqueda = bloquesSchedules.filter((b) => {
+    if (!textoBusqueda.trim()) return true;
+    const query = textoBusqueda.toLowerCase();
+    return (
+      b.materia_nombre.toLowerCase().includes(query) ||
+      b.materia_codigo.toLowerCase().includes(query) ||
+      b.profesor.toLowerCase().includes(query) ||
+      b.aula.toLowerCase().includes(query) ||
+      b.edificio.toLowerCase().includes(query)
+    );
+  });
+
   // Bloques de horario ordenados por día y hora de inicio
-  const bloquesOrdenados = bloquesSchedules.sort((a, b) => {
+  const bloquesOrdenados = [...bloquesFiltradosBusqueda].sort((a, b) => {
     const diaA = ordenDias[normalizarDia(a.dia)] || 99;
     const diaB = ordenDias[normalizarDia(b.dia)] || 99;
     if (diaA !== diaB) return diaA - diaB;
@@ -151,31 +166,38 @@ function Horario() {
           </p>
         </div>
 
-        {/* Switcher de Vistas */}
+        {/* Acciones del Header */}
         {!cargando && !error && clases.length > 0 && (
-          <div className="flex items-center gap-1 bg-slate-100 p-1.5 rounded-2xl self-start md:self-auto border border-slate-200/50 shadow-inner">
-            <button
-              onClick={() => setVista('agenda')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer ${
-                vista === 'agenda'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-800'
-              }`}
-            >
-              <List size={16} />
-              Agenda
-            </button>
-            <button
-              onClick={() => setVista('tabla')}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer ${
-                vista === 'tabla'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-slate-600 hover:text-slate-800'
-              }`}
-            >
-              <Table size={16} />
-              Semanal
-            </button>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 self-start md:self-auto w-full sm:w-auto">
+            <GooeyInput
+              value={textoBusqueda}
+              onChange={(e) => setTextoBusqueda(e.target.value)}
+              placeholder="Buscar clase, docente, aula..."
+            />
+            <div className="flex items-center gap-1 bg-slate-100 p-1.5 rounded-2xl border border-slate-200/50 shadow-inner shrink-0">
+              <button
+                onClick={() => setVista('agenda')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer ${
+                  vista === 'agenda'
+                    ? 'bg-white text-indigo-600 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-800'
+                }`}
+              >
+                <List size={16} />
+                Agenda
+              </button>
+              <button
+                onClick={() => setVista('tabla')}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold text-sm transition-all cursor-pointer ${
+                  vista === 'tabla'
+                    ? 'bg-white text-indigo-600 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-800'
+                }`}
+              >
+                <Table size={16} />
+                Semanal
+              </button>
+            </div>
           </div>
         )}
       </div>
@@ -196,7 +218,7 @@ function Horario() {
         </div>
       ) : clases.length === 0 ? (
         // Estado Vacío Premium
-        <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-[32px] p-8 md:p-16 max-w-2xl mx-auto text-center shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+        <div className="bg-white/80 backdrop-blur-xl border border-white/60 rounded-3xl sm:rounded-[32px] p-6 sm:p-8 md:p-16 max-w-2xl mx-auto text-center shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
           <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center mx-auto mb-6 text-indigo-600 shadow-inner">
             <CalendarDays size={40} />
           </div>
@@ -257,12 +279,21 @@ function Horario() {
 
               {/* Lista de Clases del día seleccionado */}
               {bloquesFiltradosDia.length === 0 ? (
-                <div className="bg-white/60 backdrop-blur-xl border border-white/60 rounded-[32px] p-12 text-center shadow-sm">
+                <div className="bg-white/60 backdrop-blur-xl border border-white/60 rounded-3xl sm:rounded-[32px] p-8 sm:p-12 text-center shadow-sm">
                   <div className="w-16 h-16 bg-slate-100/80 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
                     <Clock size={28} />
                   </div>
-                  <p className="text-slate-500 font-semibold text-lg">No tienes clases asignadas los {diaSeleccionado}s</p>
-                  <p className="text-slate-400 text-sm mt-1">Disfruta de tu tiempo libre o adelanta tus pendientes.</p>
+                  {textoBusqueda.trim() ? (
+                    <>
+                      <p className="text-slate-500 font-semibold text-lg">No se encontraron clases para "{textoBusqueda}" el {diaSeleccionado}</p>
+                      <p className="text-slate-400 text-sm mt-1">Prueba con otra materia, código, docente o aula.</p>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-slate-500 font-semibold text-lg">No tienes clases asignadas los {diaSeleccionado}s</p>
+                      <p className="text-slate-400 text-sm mt-1">Disfruta de tu tiempo libre o adelanta tus pendientes.</p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-fadeIn">
@@ -271,7 +302,7 @@ function Horario() {
                     return (
                       <div
                         key={idx}
-                        className={`bg-white border border-slate-200/60 rounded-[28px] p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between`}
+                        className={`bg-white border border-slate-200/60 rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm hover:shadow-md hover:border-slate-300 transition-all flex flex-col justify-between`}
                       >
                         <div>
                           {/* Encabezado del bloque de clase */}
@@ -334,7 +365,7 @@ function Horario() {
 
           {/* 2. VISTA DE TABLA COMPLETA (Ideal para computadoras) */}
           {vista === 'tabla' && (
-            <div className="bg-white/75 backdrop-blur-xl border border-white/60 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
+            <div className="bg-white/75 backdrop-blur-xl border border-white/60 rounded-3xl sm:rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
@@ -357,45 +388,57 @@ function Horario() {
                     </tr>
                   </thead>
                   <tbody>
-                    {bloquesOrdenados.map((bloque, idx) => {
-                      const styling = getColorBlock(bloque.id_clase);
-                      return (
-                        <tr key={idx} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-xl ${styling.bg} flex items-center justify-center ${styling.text} shrink-0`}>
-                                <BookOpen size={18} />
+                    {bloquesOrdenados.length === 0 ? (
+                      <tr>
+                        <td colSpan={5} className="px-6 py-12 text-center">
+                          <div className="w-16 h-16 bg-slate-100/80 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
+                            <Clock size={28} />
+                          </div>
+                          <p className="text-slate-500 font-semibold text-lg">No se encontraron clases coincidentes</p>
+                          <p className="text-slate-400 text-sm mt-1">Intenta ajustar tu término de búsqueda.</p>
+                        </td>
+                      </tr>
+                    ) : (
+                      bloquesOrdenados.map((bloque, idx) => {
+                        const styling = getColorBlock(bloque.id_clase);
+                        return (
+                          <tr key={idx} className="border-b border-slate-100 last:border-0 hover:bg-slate-50/50 transition-colors">
+                            <td className="px-6 py-5">
+                              <div className="flex items-center gap-3">
+                                <div className={`w-10 h-10 rounded-xl ${styling.bg} flex items-center justify-center ${styling.text} shrink-0`}>
+                                  <BookOpen size={18} />
+                                </div>
+                                <div>
+                                  <span className="font-bold text-slate-800 block">{bloque.materia_nombre}</span>
+                                  <span className="text-xs font-mono font-medium text-slate-400 uppercase">{bloque.materia_codigo}</span>
+                                </div>
                               </div>
-                              <div>
-                                <span className="font-bold text-slate-800 block">{bloque.materia_nombre}</span>
-                                <span className="text-xs font-mono font-medium text-slate-400 uppercase">{bloque.materia_codigo}</span>
+                            </td>
+                            <td className="px-6 py-5">
+                              <span className="font-bold text-slate-700">{bloque.dia}</span>
+                            </td>
+                            <td className="px-6 py-5">
+                              <div className="flex items-center gap-2 text-slate-700">
+                                <Clock size={16} className="text-slate-400" />
+                                <span className="font-semibold text-slate-800">{bloque.hora_inicio} - {bloque.hora_fin}</span>
                               </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <span className="font-bold text-slate-700">{bloque.dia}</span>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-2 text-slate-700">
-                              <Clock size={16} className="text-slate-400" />
-                              <span className="font-semibold text-slate-800">{bloque.hora_inicio} - {bloque.hora_fin}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-2 text-slate-700">
-                              <User size={16} className="text-slate-400" />
-                              <span className="font-medium">{bloque.profesor}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-5">
-                            <div className="flex items-center gap-2 text-slate-600">
-                              <MapPin size={16} className="text-slate-400" />
-                              <span className="font-medium text-slate-600">Edif. {bloque.edificio} • Aula {bloque.aula}</span>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                            </td>
+                            <td className="px-6 py-5">
+                              <div className="flex items-center gap-2 text-slate-700">
+                                <User size={16} className="text-slate-400" />
+                                <span className="font-medium">{bloque.profesor}</span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-5">
+                              <div className="flex items-center gap-2 text-slate-600">
+                                <MapPin size={16} className="text-slate-400" />
+                                <span className="font-medium text-slate-600">Edif. {bloque.edificio} • Aula {bloque.aula}</span>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
               </div>

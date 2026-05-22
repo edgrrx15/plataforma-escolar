@@ -91,7 +91,7 @@ const PerfilUsuario = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] p-4 sm:p-6 lg:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[#f5f8ff] p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8 relative overflow-hidden">
 
       {/* Background */}
       <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-blue-50/70 to-transparent -z-10"></div>
@@ -117,11 +117,6 @@ const PerfilUsuario = () => {
 
           <div className="flex items-center gap-4">
 
-            <button className="relative w-14 h-14 rounded-2xl bg-white border border-[#e4eaf3] flex items-center justify-center shadow-sm hover:shadow-md transition-all">
-              <Bell className="text-[#1d6ff2]" size={24} />
-
-              <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-red-500"></div>
-            </button>
 
             <button
               className="w-full sm:w-auto px-6 py-3 bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold rounded-2xl shadow-lg shadow-blue-500/25 transition-all hover:-translate-y-0.5"
@@ -204,9 +199,9 @@ const PerfilUsuario = () => {
         </div>
 
         {/* STATS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
 
-          <div className="bg-white border border-[#e4eaf3] rounded-[28px] p-6 shadow-sm">
+          <div className="bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm">
 
             <div className="w-14 h-14 rounded-2xl bg-[#e7f1ff] flex items-center justify-center">
               <BookOpen className="text-[#1d6ff2]" size={28} />
@@ -222,7 +217,7 @@ const PerfilUsuario = () => {
 
           </div>
 
-          <div className="bg-white border border-[#e4eaf3] rounded-[28px] p-6 shadow-sm">
+          <div className="bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm">
 
             <div className="w-14 h-14 rounded-2xl bg-[#eefaf4] flex items-center justify-center">
               <ClipboardCheck className="text-[#1eb98f]" size={28} />
@@ -238,7 +233,7 @@ const PerfilUsuario = () => {
 
           </div>
 
-          <div className="bg-white border border-[#e4eaf3] rounded-[28px] p-6 shadow-sm">
+          <div className="bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm">
 
             <div className="w-14 h-14 rounded-2xl bg-[#fff4e8] flex items-center justify-center">
               <BarChart3 className="text-[#ff922b]" size={28} />
@@ -254,7 +249,7 @@ const PerfilUsuario = () => {
 
           </div>
 
-          <div className="bg-white border border-[#e4eaf3] rounded-[28px] p-6 shadow-sm">
+          <div className="bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm">
 
             <div className="w-14 h-14 rounded-2xl bg-[#f4eeff] flex items-center justify-center">
               <GraduationCap className="text-[#7c4dff]" size={28} />
@@ -346,7 +341,7 @@ const PerfilUsuario = () => {
             </div>
 
             {/* ACTIVIDAD */}
-            <div className="bg-gradient-to-br from-[#1d6ff2] to-[#4f8fff] rounded-[28px] p-6 text-white shadow-xl shadow-blue-500/20">
+            <div className="bg-gradient-to-br from-[#1d6ff2] to-[#4f8fff] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 text-white shadow-xl shadow-blue-500/20">
 
               <div className="flex items-center justify-between">
 
@@ -457,7 +452,7 @@ const PerfilUsuario = () => {
                 </div>
 
                 {/* PROGRAMA */}
-                <div className="bg-gradient-to-br from-[#1d6ff2] to-[#7c4dff] rounded-[28px] p-5 sm:p-8 text-white shadow-xl shadow-blue-500/20 md:col-span-2 relative overflow-hidden">
+                <div className="bg-gradient-to-br from-[#1d6ff2] to-[#7c4dff] rounded-3xl sm:rounded-[28px] p-5 sm:p-8 text-white shadow-xl shadow-blue-500/20 md:col-span-2 relative overflow-hidden">
 
                   <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
 

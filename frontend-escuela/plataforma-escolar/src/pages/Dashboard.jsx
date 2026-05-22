@@ -12,11 +12,12 @@ import {
   MoreVertical
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { GooeyInput } from '../components/Buscador';
 
 const Dashboard = () => {
   const navigate = useNavigate();
 
-
+  const [textoBusqueda, setTextoBusqueda] = useState('');
 
   const [data, setData] = useState({
     nombre_usuario: '',
@@ -67,14 +68,24 @@ const Dashboard = () => {
     { color: 'bg-gradient-to-br from-rose-400 to-orange-500', shadow: 'shadow-rose-500/30' },
   ];
 
-  const materias = data.materias.map((m, i) => ({
+  // Filtrar materias en tiempo real
+  const filteredMaterias = data.materias.filter((m) =>
+    m.nombre.toLowerCase().includes(textoBusqueda.toLowerCase())
+  );
+
+  const materias = filteredMaterias.map((m, i) => ({
     ...m,
     color: gradientColors[i % gradientColors.length].color,
     shadow: gradientColors[i % gradientColors.length].shadow,
     progreso: `${m.progreso}%`
   }));
 
-  const tareas = data.tareas;
+  // Filtrar tareas en tiempo real
+  const tareas = data.tareas.filter((t) =>
+    t.titulo.toLowerCase().includes(textoBusqueda.toLowerCase()) ||
+    t.materia.toLowerCase().includes(textoBusqueda.toLowerCase())
+  );
+  
   const eventos = data.eventos;
   const stats = data.stats;
 
@@ -89,26 +100,33 @@ const Dashboard = () => {
     navigate(`/tareas/${id_tarea}`);
   }
   return (
-    <div className="min-h-screen bg-slate-50 p-6 lg:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8 relative overflow-hidden">
       {/* Background Decorative Blobs */}
       <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-indigo-50/50 to-transparent -z-10"></div>
       <div className="absolute top-20 right-20 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl -z-10"></div>
       <div className="absolute top-60 left-20 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl -z-10"></div>
 
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-8 sm:mb-10">
         <div className="space-y-1">
-          <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-800 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800 tracking-tight">
             Bienvenido de nuevo, <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-violet-600">{data.nombre_usuario}</span>
           </h1>
-          <p className="text-slate-500 mt-3 text-lg max-w-2xl font-medium">
+
+          <p className="text-slate-500 mt-2 sm:mt-3 text-base sm:text-lg max-w-2xl font-medium">
             Consulta tus materias, tareas pendientes, eventos y tu progreso académico desde un solo lugar.
           </p>
         </div>
+        
+        {/* Buscador y Perfil de Usuario alineados responsivamente */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 shrink-0 w-full lg:w-auto">
+          <GooeyInput
+            placeholder="Buscar materias o tareas..."
+            value={textoBusqueda}
+            onChange={(e) => setTextoBusqueda(e.target.value)}
+          />
 
-        <div className="flex items-center gap-4">
-
-          <div className="bg-white/80 backdrop-blur-lg border border-slate-200 rounded-2xl p-2.5 pr-6 flex items-center gap-4 shadow-sm hover:shadow-md transition-all cursor-pointer">
+          <div className="bg-white/80 backdrop-blur-lg border border-slate-200 rounded-2xl p-2.5 pr-6 flex items-center gap-4 shadow-sm hover:shadow-md transition-all cursor-pointer w-full sm:w-auto">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg shadow-inner">
               {data.iniciales}
             </div>
@@ -148,13 +166,13 @@ const Dashboard = () => {
         <div className="xl:col-span-2 flex flex-col gap-8">
 
           {/* Materias */}
-          <div className="bg-white/70 backdrop-blur-xl rounded-[32px] border border-white/60 p-7 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl sm:rounded-[32px] border border-white/60 p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
             <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/50 rounded-full blur-3xl -z-10"></div>
 
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Tus materias</h2>
-                <p className="text-slate-500 mt-1 font-medium">Continúa aprendiendo en tus cursos activos.</p>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">Tus materias</h2>
+                <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">Continúa aprendiendo en tus cursos activos.</p>
               </div>
               <button
                 onClick={() => navigate('/clases')}
@@ -208,11 +226,11 @@ const Dashboard = () => {
           </div>
 
           {/* Tareas */}
-          <div className="bg-white/70 backdrop-blur-xl rounded-[32px] border border-white/60 p-7 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <div className="flex items-center justify-between mb-8">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl sm:rounded-[32px] border border-white/60 p-5 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
+            <div className="flex items-center justify-between mb-6 sm:mb-8">
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Tareas pendientes</h2>
-                <p className="text-slate-500 mt-1 font-medium">No olvides completar tus actividades.</p>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight">Tareas pendientes</h2>
+                <p className="text-sm sm:text-base text-slate-500 mt-1 font-medium">No olvides completar tus actividades.</p>
               </div>
             </div>
 

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Award, Plus, Search, Trash2, Edit2, AlertCircle } from 'lucide-react';
 import ModalCalificacion from '../Dialogs/ModalCalificacion';
+import { GooeyInput } from '../components/Buscador';
 
 function Calificaciones() {
   const [calificaciones, setCalificaciones] = useState([]);
@@ -78,7 +79,7 @@ function Calificaciones() {
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 lg:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8 relative overflow-hidden">
       {/* Background Decorative Blobs */}
       <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-indigo-50/50 to-transparent -z-10"></div>
       <div className="absolute top-20 right-20 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl -z-10"></div>
@@ -86,7 +87,7 @@ function Calificaciones() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
         <div>
-          <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-800 tracking-tight mb-3">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800 tracking-tight mb-3">
             {esDocente ? 'Control de Calificaciones' : 'Mis Calificaciones'}
           </h1>
           <p className="text-slate-500 text-lg font-medium max-w-2xl">
@@ -109,21 +110,18 @@ function Calificaciones() {
 
       {/* Buscador & Contenido */}
       <div className="space-y-6">
-        <div className="relative w-full max-w-lg bg-white/70 backdrop-blur-xl border border-white/60 rounded-2xl shadow-sm focus-within:border-indigo-500 transition-colors">
-          <span className="absolute inset-y-0 left-4 flex items-center text-slate-400">
-            <Search size={18} />
-          </span>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder={esDocente ? 'Buscar por materia o alumno...' : 'Buscar por materia...'}
-            className="w-full h-12 pl-12 pr-4 outline-none bg-transparent text-slate-800 placeholder-slate-400 font-medium text-[15px]"
-          />
-        </div>
+        {esDocente && (
+          <div className="mb-4">
+            <GooeyInput
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Buscar por materia o alumno..."
+            />
+          </div>
+        )}
 
         {/* Contenedor de la Tabla */}
-        <div className="bg-white/75 backdrop-blur-xl border border-white/60 rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+        <div className="bg-white/75 backdrop-blur-xl border border-white/60 rounded-3xl sm:rounded-[32px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
           {loading ? (
             <div className="py-20 flex items-center justify-center">
               <div className="h-12 w-12 animate-spin rounded-full border-b-4 border-indigo-200 border-t-indigo-600"></div>

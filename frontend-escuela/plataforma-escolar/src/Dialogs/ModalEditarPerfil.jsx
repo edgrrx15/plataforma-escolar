@@ -89,26 +89,26 @@ const ModalEditarPerfil = ({ mostrarModal, setMostrarModal, perfil, setPerfil })
     if (!mostrarModal) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-            <div className="bg-white rounded-[32px] p-8 sm:p-10 shadow-[0_20px_40px_rgba(0,0,0,0.1)] w-full max-w-3xl max-h-[80vh] overflow-y-auto">
-                <div className="flex items-center justify-between mb-6 sm:mb-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+            <div className="bg-white rounded-3xl sm:rounded-[32px] p-6 sm:p-10 shadow-[0_20px_40px_rgba(0,0,0,0.1)] w-full max-w-3xl max-h-[95vh] overflow-y-auto">
+                <div className="flex items-center justify-between mb-6 sm:mb-8 mt-2 sm:mt-0">
                     <h2 className="text-2xl sm:text-3xl font-bold text-[#08183f]">Editar Perfil</h2>
                     <button
                         onClick={cerrarModal}
                         className="p-2 text-[#667394] hover:text-[#08183f] hover:bg-[#f5f8ff] rounded-full transition-colors"
                     >
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
                 </div>
 
-                <div className="mb-8 flex flex-col items-center">
-                    <div className="w-24 h-24 rounded-full bg-[#f5f8ff] flex items-center justify-center border-2 border-dashed border-[#1d6ff2] mb-3 overflow-hidden relative cursor-pointer hover:bg-[#ebf1ff] transition-colors">
+                <div className="mb-6 sm:mb-8 flex flex-col items-center">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-[#f5f8ff] flex items-center justify-center border-2 border-dashed border-[#1d6ff2] mb-3 overflow-hidden relative cursor-pointer hover:bg-[#ebf1ff] transition-colors">
                         {archivoFoto ? (
                             <img src={URL.createObjectURL(archivoFoto)} alt="Preview" className="w-full h-full object-cover" />
                         ) : (
-                            <Camera size={32} className="text-[#1d6ff2]" />
+                            <Camera className="text-[#1d6ff2] w-6 h-6 sm:w-8 sm:h-8" />
                         )}
                         <input 
                             type="file" 
@@ -117,10 +117,10 @@ const ModalEditarPerfil = ({ mostrarModal, setMostrarModal, perfil, setPerfil })
                             onChange={handleFotoChange}
                         />
                     </div>
-                    <span className="text-sm font-medium text-[#667394]">Subir nueva foto</span>
+                    <span className="text-xs sm:text-sm font-medium text-[#667394]">Subir nueva foto</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-4">
                         <div className="space-y-2">
                             <label className="text-sm font-semibold text-[#08183f]">Teléfono</label>
@@ -155,7 +155,7 @@ const ModalEditarPerfil = ({ mostrarModal, setMostrarModal, perfil, setPerfil })
                         </div>
                     </div>
                 </div>
-                <div className="mt-6 sm:mt-8 flex gap-3">
+                <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3 sm:gap-4">
                     <button
                         onClick={cerrarModal}
                         className="flex-1 px-6 py-3 rounded-2xl border border-[#e4eaf3] bg-white text-[#08183f] font-semibold hover:bg-[#f5f8ff] transition-colors"

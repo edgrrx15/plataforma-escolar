@@ -21,8 +21,10 @@ import {
 import ModalCrearClase from '../Dialogs/ModalCrearClase'
 import ModalUnirseClase from '../Dialogs/ModalUnirseClase'
 import ClaseCard from '../components/ClaseCard'
+import { GooeyInput } from '../components/Buscador'
 
 function Clases() {
+  const [textoBusqueda, setTextoBusqueda] = useState('')
   const [modalAbierto, setModalAbierto] = useState(false)
   const [modalUnirseAbierto, setModalUnirseAbierto] = useState(false)
   const usuarioInfo = JSON.parse(localStorage.getItem('usuario') || '{}');
@@ -32,46 +34,49 @@ function Clases() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] p-6 lg:p-8">
+    <div className="min-h-screen bg-[#f5f8ff] p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8">
 
       {/* HEADER */}
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6 mb-10">
 
         <div>
-          <h1 className="text-4xl lg:text-5xl font-extrabold text-[#08183f] mt-2 tracking-tight">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#08183f] mt-2 tracking-tight">
             Clases
           </h1>
 
-          <p className="text-[#667394] mt-3 text-lg max-w-2xl">
+          <p className="text-[#667394] mt-3 text-base sm:text-lg max-w-2xl">
             Organiza tus clases, administra estudiantes y consulta el rendimiento académico.
           </p>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 w-full xl:w-auto">
+          <GooeyInput
+            placeholder="Buscar clases..."
+            value={textoBusqueda}
+            onChange={(e) => setTextoBusqueda(e.target.value)}
+          />
 
-          <button className="relative w-14 h-14 rounded-2xl bg-white border border-[#e4eaf3] flex items-center justify-center shadow-sm hover:shadow-md transition-all">
-            <Bell className="text-[#1d6ff2]" size={24} />
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto shrink-0 justify-end sm:justify-start">
 
-            <div className="absolute top-3 right-3 w-3 h-3 rounded-full bg-red-500"></div>
-          </button>
 
-          {usuarioInfo.rol !== 'estudiante' ? (
-            <button
-              onClick={() => setModalAbierto(true)}
-              className="h-14 px-6 rounded-2xl bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3"
-            >
-              <Plus size={22} />
-              Crear clase
-            </button>
-          ) : (
-            <button
-              onClick={handleUnirse}
-              className="h-14 px-6 rounded-2xl bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3"
-            >
-              <LinkIcon size={22} />
-              Unirse a clase
-            </button>
-          )}
+            {usuarioInfo.rol !== 'estudiante' ? (
+              <button
+                onClick={() => setModalAbierto(true)}
+                className="w-full sm:w-auto h-12 sm:h-14 px-6 rounded-2xl bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3 shrink-0"
+              >
+                <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
+                Crear clase
+              </button>
+            ) : (
+              <button
+                onClick={handleUnirse}
+                className="w-full sm:w-auto h-12 sm:h-14 px-6 rounded-2xl bg-[#1d6ff2] hover:bg-[#155fd4] text-white font-bold transition-all shadow-lg shadow-blue-500/25 flex items-center justify-center gap-3 shrink-0"
+              >
+                <LinkIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+                Unirse a clase
+              </button>
+            )}
+          </div>
 
           <ModalCrearClase
             modalAbierto={modalAbierto}
@@ -159,7 +164,7 @@ function Clases() {
 
       {/* GRID */}
       <div>
-        <ClaseCard />
+        <ClaseCard searchQuery={textoBusqueda} />
       </div>
     </div>
   )

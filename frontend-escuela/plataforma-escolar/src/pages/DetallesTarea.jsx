@@ -178,7 +178,7 @@ const DetallesTarea = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-[#f5f8ff] p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8">
 
       {/* Back Button */}
       <div className="max-w-6xl mx-auto mb-6">
@@ -195,7 +195,7 @@ const DetallesTarea = () => {
 
         {/* Panel Izquierdo: Detalles de la Tarea (Compartido) */}
         <div className={`${esDocente ? 'lg:col-span-1' : 'lg:col-span-2'} space-y-6`}>
-          <div className="bg-white rounded-[32px] p-8 border border-slate-200 shadow-sm">
+          <div className="bg-white rounded-3xl sm:rounded-[32px] p-6 sm:p-8 border border-slate-200 shadow-sm">
             <div className="flex items-start gap-4 mb-6">
               <div className="w-14 h-14 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0">
                 <FileText size={28} />
@@ -228,7 +228,7 @@ const DetallesTarea = () => {
 
           {/* Comentarios Privados (Solo Estudiante) */}
           {!esDocente && entregaData && entregaData.calificacion !== null && (
-            <div className="bg-emerald-50 rounded-[24px] p-6 border border-emerald-100">
+            <div className="bg-emerald-50 rounded-3xl sm:rounded-[24px] p-5 sm:p-6 border border-emerald-100">
               <h3 className="font-bold text-emerald-800 mb-2 flex items-center gap-2">
                 <CheckCircle2 size={20} />
                 Tarea Calificada
@@ -247,7 +247,7 @@ const DetallesTarea = () => {
 
         {/* Panel Derecho: Dinámico según Rol */}
         <div className={`${esDocente ? 'lg:col-span-2' : 'lg:col-span-1'}`}>
-          <div className="bg-white rounded-[32px] p-6 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-8">
+          <div className="bg-white rounded-3xl sm:rounded-[32px] p-5 sm:p-6 border border-slate-200 shadow-[0_8px_30px_rgb(0,0,0,0.04)] sticky top-8">
             
             {/* VISTA ESTUDIANTE */}
             {!esDocente && (
@@ -298,7 +298,7 @@ const DetallesTarea = () => {
                   </div>
                 ) : (
                   <form onSubmit={handleEntregar} className="space-y-5">
-                    <div className="border-2 border-dashed border-indigo-100 bg-indigo-50/50 rounded-2xl p-6 text-center hover:bg-indigo-50 transition-colors relative">
+                    <div className="border-2 border-dashed border-indigo-100 bg-indigo-50/50 rounded-xl sm:rounded-2xl p-5 sm:p-6 text-center hover:bg-indigo-50 transition-colors relative">
                       <input
                         type="file"
                         onChange={(e) => setArchivo(e.target.files[0])}

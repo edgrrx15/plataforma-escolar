@@ -162,10 +162,10 @@ const Login = ({ setUsuario }) => {
         {/* LADO DERECHO */}
         <section className="flex items-center justify-center px-6 py-10 bg-[#fbfdff]">
 
-          <div className="w-full max-w-xl bg-white border border-[#e4eaf3] rounded-[32px] px-8 sm:px-12 py-10 sm:py-12 shadow-[0_25px_80px_rgba(49,82,130,0.12)]">
+          <div className="w-full max-w-xl bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[32px] px-6 sm:px-12 py-8 sm:py-12 shadow-[0_25px_80px_rgba(49,82,130,0.12)]">
 
             {/* Tabs */}
-            <div className="grid grid-cols-2 border-b border-[#e5eaf2] mb-10">
+            <div className="grid grid-cols-2 border-b border-[#e5eaf2] mb-8 sm:mb-10">
               <button
                 type="button"
                 onClick={() => setTipoUsuario('estudiante')}

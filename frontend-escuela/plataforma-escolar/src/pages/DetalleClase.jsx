@@ -8,10 +8,12 @@ import {
   FileText,
   Clock,
   MoreVertical,
-  User
+  User,
+  AlertCircle
 } from 'lucide-react';
 import ModalCrearTarea from '../Dialogs/ModalCrearTarea';
 import ModalAgregarAnuncio from '../Dialogs/ModalAgregarAnuncio';
+import { GooeyInput } from '../components/Buscador';
 
 const DetalleClase = () => {
   const { id } = useParams();
@@ -22,6 +24,7 @@ const DetalleClase = () => {
   const [error, setError] = useState(null);
   const [modalTareaAbierto, setModalTareaAbierto] = useState(false);
   const [modalAnuncioAbierto, setModalAnuncioAbierto] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const usuarioInfo = JSON.parse(localStorage.getItem('usuario') || '{}');
   const esDocente = usuarioInfo.rol === 'docente' || usuarioInfo.rol === 'profesor';
@@ -96,8 +99,37 @@ const DetalleClase = () => {
     setModalAnuncioAbierto(true);
   }
 
+  // Listas filtradas contextualmente según la query del buscador
+  const filteredAnuncios = (claseData.anuncios || []).filter(anuncio => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      anuncio.titulo?.toLowerCase().includes(query) ||
+      anuncio.descripcion?.toLowerCase().includes(query) ||
+      `${anuncio.profesor_nombre} ${anuncio.profesor_apellido}`.toLowerCase().includes(query)
+    );
+  });
+
+  const filteredTareas = (claseData.tareas || []).filter(tarea => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      tarea.titulo?.toLowerCase().includes(query) ||
+      tarea.descripcion?.toLowerCase().includes(query)
+    );
+  });
+
+  const filteredEstudiantes = (claseData.estudiantes || []).filter(estudiante => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      estudiante.nombre?.toLowerCase().includes(query) ||
+      estudiante.apellido?.toLowerCase().includes(query)
+    );
+  });
+
   return (
-    <div className="min-h-screen bg-[#f5f8ff] p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-[#f5f8ff] p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8">
       {/* Back Button & Header Actions */}
       <div className="max-w-5xl mx-auto mb-6 flex items-center justify-between">
         <button
@@ -110,7 +142,7 @@ const DetalleClase = () => {
       </div>
 
       {/* Hero Header */}
-      <div className="max-w-5xl mx-auto bg-gradient-to-br from-indigo-600 to-purple-600 rounded-[32px] p-8 sm:p-10 shadow-xl shadow-indigo-500/20 relative overflow-hidden mb-8 text-white">
+      <div className="max-w-5xl mx-auto bg-gradient-to-br from-indigo-600 to-purple-600 rounded-3xl sm:rounded-[32px] p-6 sm:p-10 shadow-xl shadow-indigo-500/20 relative overflow-hidden mb-8 text-white">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/10 rounded-full blur-2xl translate-y-1/2 -translate-x-1/4"></div>
 
@@ -139,29 +171,44 @@ const DetalleClase = () => {
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="max-w-5xl mx-auto mb-8 flex border-b border-slate-200">
-        <button
-          onClick={() => setActiveTab('anuncios')}
-          className={`flex items-center gap-2 px-6 py-4 font-bold text-[15px] border-b-2 transition-colors ${activeTab === 'anuncios' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
-        >
-          <MessageSquare size={18} />
-          Anuncios
-        </button>
-        <button
-          onClick={() => setActiveTab('tareas')}
-          className={`flex items-center gap-2 px-6 py-4 font-bold text-[15px] border-b-2 transition-colors ${activeTab === 'tareas' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
-        >
-          <ClipboardList size={18} />
-          Tareas
-        </button>
-        <button
-          onClick={() => setActiveTab('personas')}
-          className={`flex items-center gap-2 px-6 py-4 font-bold text-[15px] border-b-2 transition-colors ${activeTab === 'personas' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
-        >
-          <Users size={18} />
-          Personas
-        </button>
+      {/* Tabs & Search */}
+      <div className="max-w-5xl mx-auto mb-8 flex flex-col md:flex-row md:items-center md:justify-between border-b border-slate-200 pb-2 md:pb-0 gap-4">
+        <div className="flex overflow-x-auto scrollbar-none">
+          <button
+            onClick={() => { setActiveTab('anuncios'); setSearchQuery(''); }}
+            className={`flex items-center gap-2 px-6 py-4 font-bold text-[15px] border-b-2 transition-colors whitespace-nowrap ${activeTab === 'anuncios' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+          >
+            <MessageSquare size={18} />
+            Anuncios
+          </button>
+          <button
+            onClick={() => { setActiveTab('tareas'); setSearchQuery(''); }}
+            className={`flex items-center gap-2 px-6 py-4 font-bold text-[15px] border-b-2 transition-colors whitespace-nowrap ${activeTab === 'tareas' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+          >
+            <ClipboardList size={18} />
+            Tareas
+          </button>
+          <button
+            onClick={() => { setActiveTab('personas'); setSearchQuery(''); }}
+            className={`flex items-center gap-2 px-6 py-4 font-bold text-[15px] border-b-2 transition-colors whitespace-nowrap ${activeTab === 'personas' ? 'border-indigo-600 text-indigo-600' : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}`}
+          >
+            <Users size={18} />
+            Personas
+          </button>
+        </div>
+        <div className="pb-2 md:pb-0 self-start md:self-auto shrink-0 w-full sm:w-auto">
+          <GooeyInput
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={
+              activeTab === 'anuncios'
+                ? "Buscar anuncios..."
+                : activeTab === 'tareas'
+                ? "Buscar tareas..."
+                : "Buscar compañeros..."
+            }
+          />
+        </div>
       </div>
 
       {/* Tab Content */}
@@ -179,9 +226,9 @@ const DetalleClase = () => {
               </div>
             )}
 
-            {claseData.anuncios && claseData.anuncios.length > 0 ? (
-              claseData.anuncios.map(anuncio => (
-                <div key={anuncio.id_anuncio} className="bg-white p-6 rounded-[24px] border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+            {filteredAnuncios && filteredAnuncios.length > 0 ? (
+              filteredAnuncios.map(anuncio => (
+                <div key={anuncio.id_anuncio} className="bg-white p-5 sm:p-6 rounded-3xl sm:rounded-[24px] border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg shrink-0">
                       {anuncio.profesor_iniciales || 'P'}
@@ -204,12 +251,21 @@ const DetalleClase = () => {
                 </div>
               ))
             ) : (
-              <div className="bg-white rounded-[24px] p-8 border border-slate-200 shadow-sm text-center">
+              <div className="bg-white rounded-3xl sm:rounded-[24px] p-6 sm:p-8 border border-slate-200 shadow-sm text-center">
                 <div className="w-16 h-16 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <MessageSquare size={32} />
+                  {searchQuery.trim() ? <AlertCircle size={32} className="text-slate-400" /> : <MessageSquare size={32} />}
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">No hay anuncios aún</h3>
-                <p className="text-slate-500">Este es el espacio donde el profesor publicará novedades de la clase.</p>
+                {searchQuery.trim() ? (
+                  <>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">Sin coincidencias</h3>
+                    <p className="text-slate-500">No se encontraron anuncios que coincidan con "{searchQuery}".</p>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">No hay anuncios aún</h3>
+                    <p className="text-slate-500">Este es el espacio donde el profesor publicará novedades de la clase.</p>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -227,12 +283,12 @@ const DetalleClase = () => {
                 </button>
               </div>
             )}
-            {claseData.tareas && claseData.tareas.length > 0 ? (
-              claseData.tareas.map(tarea => (
+            {filteredTareas && filteredTareas.length > 0 ? (
+              filteredTareas.map(tarea => (
                 <div
                   key={tarea.id_tarea}
                   onClick={() => navigate(`/tareas/${tarea.id_tarea}`)}
-                  className="bg-white p-5 rounded-[20px] border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4 cursor-pointer group"
+                  className="bg-white p-4 sm:p-5 rounded-3xl sm:rounded-[20px] border border-slate-200 shadow-sm hover:shadow-md transition-shadow flex items-start gap-4 cursor-pointer group"
                 >
                   <div className="w-12 h-12 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                     <FileText size={24} />
@@ -252,12 +308,21 @@ const DetalleClase = () => {
                 </div>
               ))
             ) : (
-              <div className="bg-white rounded-[24px] p-8 border border-slate-200 shadow-sm text-center">
+              <div className="bg-white rounded-3xl sm:rounded-[24px] p-6 sm:p-8 border border-slate-200 shadow-sm text-center">
                 <div className="w-16 h-16 bg-slate-50 text-slate-300 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <ClipboardList size={32} />
+                  {searchQuery.trim() ? <AlertCircle size={32} className="text-slate-400" /> : <ClipboardList size={32} />}
                 </div>
-                <h3 className="text-xl font-bold text-slate-800 mb-2">No hay tareas asignadas</h3>
-                <p className="text-slate-500">¡Todo al día! Disfruta tu tiempo libre.</p>
+                {searchQuery.trim() ? (
+                  <>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">Sin coincidencias</h3>
+                    <p className="text-slate-500">No se encontraron tareas que coincidan con "{searchQuery}".</p>
+                  </>
+                ) : (
+                  <>
+                    <h3 className="text-xl font-bold text-slate-800 mb-2">No hay tareas asignadas</h3>
+                    <p className="text-slate-500">¡Todo al día! Disfruta tu tiempo libre.</p>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -283,10 +348,10 @@ const DetalleClase = () => {
             <div>
               <h3 className="text-2xl font-extrabold text-indigo-600 border-b-2 border-indigo-100 pb-3 mb-4 flex items-center justify-between">
                 Compañeros
-                <span className="text-sm font-bold text-indigo-400 bg-indigo-50 px-3 py-1 rounded-full">{claseData.estudiantes?.length || 0} alumnos</span>
+                <span className="text-sm font-bold text-indigo-400 bg-indigo-50 px-3 py-1 rounded-full">{filteredEstudiantes.length} {filteredEstudiantes.length === 1 ? 'alumno' : 'alumnos'}</span>
               </h3>
               <div className="space-y-1">
-                {claseData.estudiantes && claseData.estudiantes.map(estudiante => (
+                {filteredEstudiantes && filteredEstudiantes.map(estudiante => (
                   <div key={estudiante.id_estudiante} className="flex items-center gap-4 p-4 rounded-[20px] hover:bg-white transition-colors border border-transparent hover:border-slate-100 hover:shadow-sm">
                     <div className="w-10 h-10 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm">
                       {estudiante.iniciales}
@@ -304,9 +369,14 @@ const DetalleClase = () => {
                     )}
                   </div>
                 ))}
-                {(!claseData.estudiantes || claseData.estudiantes.length === 0) && (
+                {(!claseData.estudiantes || claseData.estudiantes.length === 0) ? (
                   <p className="text-slate-500 italic p-4">No hay estudiantes inscritos aún.</p>
-                )}
+                ) : filteredEstudiantes.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center p-8 bg-white rounded-2xl border border-dashed border-slate-200">
+                    <AlertCircle size={28} className="text-slate-400 mb-2" />
+                    <p className="text-slate-500 font-medium text-sm">No se encontraron compañeros que coincidan con "{searchQuery}".</p>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>

@@ -9,7 +9,7 @@ const ModalRecuperar = ({modalAbierto, setModalAbierto}) => {
       {modalAbierto && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm px-4">
           
-          <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl">
+          <div className="relative w-full max-w-md rounded-3xl bg-white p-6 shadow-2xl overflow-y-auto max-h-[95vh]">
             
             {/* Botón cerrar */}
             <button

@@ -35,27 +35,27 @@ const ModalAgregarAnuncio = ({ modalAnuncioAbierto, setModalAnuncioAbierto, clas
 
     return (
         <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black/45 backdrop-blur-sm px-4 ${modalAnuncioAbierto ? 'block' : 'hidden'}`}>
-            <div className="relative w-full max-w-2xl rounded-[32px] bg-white border border-[#e4eaf3] shadow-[0_30px_100px_rgba(15,27,61,0.25)] p-8">
+            <div className="relative w-full max-w-2xl rounded-3xl sm:rounded-[32px] bg-white border border-[#e4eaf3] shadow-[0_30px_100px_rgba(15,27,61,0.25)] p-6 sm:p-8 max-h-[95vh] overflow-y-auto">
                 {/* CLOSE */}
                 <button
                     onClick={() => setModalAnuncioAbierto(false)}
-                    className="cursor-pointer absolute right-5 top-5 w-10 h-10 rounded-full flex items-center justify-center text-[#667394] hover:bg-[#f1f5fb] hover:text-[#0f1b3d] transition"
+                    className="cursor-pointer absolute right-4 top-4 sm:right-5 sm:top-5 w-10 h-10 rounded-full flex items-center justify-center text-[#667394] hover:bg-[#f1f5fb] hover:text-[#0f1b3d] transition"
                 >
                     <X size={22} />
                 </button>
 
                 {/* HEADER */}
-                <div className="flex items-center gap-5 mb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-[#e7f1ff] flex items-center justify-center">
-                        <MessageSquare className="text-[#1d6ff2]" size={32} />
+                <div className="flex items-center gap-4 sm:gap-5 mb-6 sm:mb-8 mt-2 sm:mt-0">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[#e7f1ff] flex items-center justify-center shrink-0">
+                        <MessageSquare className="text-[#1d6ff2] w-6 h-6 sm:w-8 sm:h-8" />
                     </div>
                     <div>
-                        <h2 className="text-3xl font-bold text-[#08183f]">Nuevo anuncio</h2>
-                        <p className="text-[#667394] mt-2">Publica un mensaje para toda la clase.</p>
+                        <h2 className="text-2xl sm:text-3xl font-bold text-[#08183f]">Nuevo anuncio</h2>
+                        <p className="text-sm sm:text-base text-[#667394] mt-1 sm:mt-2">Publica un mensaje para toda la clase.</p>
                     </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-5 sm:space-y-6">
                     <div>
                         <label className="block text-[#14264b] font-bold mb-2">
                             Título

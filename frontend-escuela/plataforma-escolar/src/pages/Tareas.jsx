@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClipboardList, CheckCircle2, Clock3, BookOpen, ArrowRight, CalendarDays, MoreVertical } from 'lucide-react';
+import { GooeyInput } from '../components/Buscador';
 
 const Tareas = () => {
   const navigate = useNavigate();
   const [tareas, setTareas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [textoBusqueda, setTextoBusqueda] = useState('');
 
   const usuarioStr = localStorage.getItem('usuario');
   const usuarioObj = usuarioStr ? JSON.parse(usuarioStr) : null;
@@ -43,8 +45,13 @@ const Tareas = () => {
     );
   }
 
-  const pendientes = esDocente ? tareas : tareas.filter(t => !t.id_entrega);
-  const completadas = esDocente ? [] : tareas.filter(t => t.id_entrega);
+  const filteredTareas = tareas.filter(t => 
+    t.titulo?.toLowerCase().includes(textoBusqueda.toLowerCase()) || 
+    t.materia_nombre?.toLowerCase().includes(textoBusqueda.toLowerCase())
+  );
+
+  const pendientes = esDocente ? filteredTareas : filteredTareas.filter(t => !t.id_entrega);
+  const completadas = esDocente ? [] : filteredTareas.filter(t => t.id_entrega);
 
   const handleVerDetalle = (id) => {
     navigate(`/tareas/${id}`);
@@ -57,21 +64,31 @@ const Tareas = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 lg:p-8 relative overflow-hidden">
+    <div className="min-h-screen bg-[#f5f8ff] p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8 relative overflow-hidden">
       {/* Background Decorative Blobs */}
       <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-indigo-50/50 to-transparent -z-10"></div>
       <div className="absolute top-20 right-20 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl -z-10"></div>
 
       {/* Header */}
-      <div className="mb-10">
-        <h1 className="text-4xl lg:text-5xl font-extrabold text-slate-800 tracking-tight mb-3">
-          Mis Tareas
-        </h1>
-        <p className="text-slate-500 text-lg font-medium max-w-2xl">
-          {esDocente
-            ? 'Gestiona todas las tareas que has asignado en tus clases.'
-            : 'Revisa tus tareas pendientes y el historial de tus entregas.'}
-        </p>
+      <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 mb-10">
+        <div>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-800 tracking-tight mb-3">
+            Mis Tareas
+          </h1>
+          <p className="text-slate-500 text-base sm:text-lg font-medium max-w-2xl">
+            {esDocente
+              ? 'Gestiona todas las tareas que has asignado en tus clases.'
+              : 'Revisa tus tareas pendientes y el historial de tus entregas.'}
+          </p>
+        </div>
+
+        <div className="w-full lg:w-auto shrink-0 flex justify-start lg:justify-end">
+          <GooeyInput
+            placeholder="Buscar por título o materia..."
+            value={textoBusqueda}
+            onChange={(e) => setTextoBusqueda(e.target.value)}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
@@ -90,7 +107,7 @@ const Tareas = () => {
 
           <div className="space-y-4">
             {pendientes.length === 0 ? (
-              <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-[32px] p-12 text-center shadow-sm">
+              <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-3xl sm:rounded-[32px] p-8 sm:p-12 text-center shadow-sm">
                 <div className="w-20 h-20 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 size={40} className="text-indigo-400" />
                 </div>
@@ -102,7 +119,7 @@ const Tareas = () => {
                 <div
                   key={tarea.id_tarea}
                   onClick={() => handleVerDetalle(tarea.id_tarea)}
-                  className="group bg-white/70 backdrop-blur-xl border border-white/60 rounded-[28px] p-6 sm:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 cursor-pointer relative overflow-hidden"
+                  className="group bg-white/70 backdrop-blur-xl border border-white/60 rounded-3xl sm:rounded-[28px] p-5 sm:p-7 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 cursor-pointer relative overflow-hidden"
                 >
                   <div className="absolute -right-10 -top-10 w-40 h-40 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700 -z-10"></div>
 
@@ -155,7 +172,7 @@ const Tareas = () => {
 
             <div className="space-y-4">
               {completadas.length === 0 ? (
-                <div className="bg-white/50 border border-slate-100 rounded-[24px] p-8 text-center">
+                <div className="bg-white/50 border border-slate-100 rounded-3xl sm:rounded-[24px] p-6 sm:p-8 text-center">
                   <p className="text-slate-500 font-medium">Aún no has entregado ninguna tarea.</p>
                 </div>
               ) : (
@@ -163,7 +180,7 @@ const Tareas = () => {
                   <div
                     key={tarea.id_tarea}
                     onClick={() => handleVerDetalle(tarea.id_tarea)}
-                    className="bg-white border border-slate-100 rounded-[24px] p-5 hover:shadow-md hover:border-emerald-100 transition-all cursor-pointer group"
+                    className="bg-white border border-slate-100 rounded-3xl sm:rounded-[24px] p-4 sm:p-5 hover:shadow-md hover:border-emerald-100 transition-all cursor-pointer group"
                   >
                     <div className="flex gap-4">
                       <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">

@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { BookOpen, MoreVertical, Users, Clock3, FileText, BarChart3, Trash2 } from 'lucide-react'
 import ModalConfirmacionEliminar from '../Dialogs/ModalConfirmacionEliminar'
 
-const ClaseCard = () => {
+const ClaseCard = ({ searchQuery = "" }) => {
     const [clases, setClases] = useState([]);
     const [dropdownAbierto, setDropdownAbierto] = useState(null);
     const [modalAbierto, setModalAbierto] = useState(false);
@@ -82,6 +82,11 @@ const ClaseCard = () => {
         }
     };
 
+    const clasesFiltradas = clases.filter(clase => {
+        const matchMateria = clase.materia_nombre?.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchProfesor = `${clase.profesor_nombre || ""} ${clase.profesor_apellido || ""}`.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchMateria || matchProfesor;
+    });
 
     return (
         <>
@@ -94,13 +99,23 @@ const ClaseCard = () => {
                     <p className="text-[#667394] max-w-md text-lg">
                         {esDocente 
                             ? "Aún no has creado ninguna clase. ¡Usa el botón de crear clase para empezar!" 
-                            : "Actualmente no estás inscrito en ninguna clase o no se encontraron resultados. ¡Únete a una clase usando tu código de acceso para empezar!"
+                            : "Actualmente no estás inscrito en ninguna clase. ¡Únete a una clase usando tu código de acceso para empezar!"
                         }
+                    </p>
+                </div>
+            ) : clasesFiltradas.length === 0 ? (
+                <div className="flex flex-col items-center justify-center p-12 mt-8 bg-white border border-[#e4eaf3] rounded-[32px] shadow-sm text-center w-full col-span-full">
+                    <div className="w-20 h-20 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center mb-6">
+                        <BookOpen size={36} className="text-slate-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-[#08183f] mb-2">No se encontraron clases</h3>
+                    <p className="text-[#667394] max-w-md text-sm">
+                        No hay ninguna clase que coincida con tu búsqueda "{searchQuery}". Intenta con otros términos o códigos.
                     </p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6 w-full">
-                    {clases.map((clase, index) => {
+                    {clasesFiltradas.map((clase, index) => {
                         const gradients = [
                             'bg-gradient-to-br from-indigo-500 to-purple-600',
                             'bg-gradient-to-br from-blue-500 to-cyan-500',
