@@ -86,13 +86,17 @@ router.get('/usuarios', async (req, res) => {
 
 // 3. Crear Usuario (Alumno, Docente o Administrador)
 router.post('/usuarios', async (req, res) => {
+    // Los parametros se reciben desde el frontend.
     const { nombre, apellido, email, telefono, fecha_nacimiento, contrasena, rol, id_clase } = req.body;
-    
+
+    // Crear un cliente para la transacción.
     let client;
     try {
+        // se inicia una transacción para garantizar la integridad de los datos.
         client = await pool.connect();
         await client.query('BEGIN');
 
+        // Declaracion de variables para almacenar los IDs.
         let idEstudiante = null;
         let idProfesor = null;
 
@@ -144,7 +148,7 @@ router.post('/usuarios', async (req, res) => {
             VALUES ($1, $2, $3, $4, $5)
             RETURNING id_usuario
         `;
-        
+
         let dbRol = 'estudiante';
         if (normalizedRol === 'admin' || normalizedRol === 'administrador') {
             dbRol = 'admin';
@@ -155,7 +159,7 @@ router.post('/usuarios', async (req, res) => {
         await client.query(queryUsuario, [email, contrasena, dbRol, idEstudiante, idProfesor]);
 
         await client.query('COMMIT');
-        
+
         res.status(201).json({
             success: true,
             mensaje: 'Usuario creado exitosamente',
@@ -372,7 +376,7 @@ router.post('/usuarios/importar', upload.single('file'), async (req, res) => {
             const rol = (row.Rol || row.rol || row.ROL || 'alumno').toLowerCase().trim();
             const contrasena = String(row.Contrasena || row.contrasena || row.CONTRASENA || row.Password || row.password || '123456');
             const telefono = row.Telefono || row.telefono || row.TELEFONO || null;
-            
+
             let fecha_nacimiento = row.Fecha_Nacimiento || row.fecha_nacimiento || row.FechaNacimiento || null;
             // Manejar formato de fecha de Excel si viene como número
             if (typeof fecha_nacimiento === 'number') {
