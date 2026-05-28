@@ -1,11 +1,11 @@
 const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
+const pool = require("./src/config/db");
 
 const app = express();
 
-const PORT = process.env.PORT;
-const IP_ADDRESS = process.env.IP_ADDRESS;
+const PORT = process.env.PORT || 3000;
 
 /**
  * IMPORTAR RUTAS
@@ -21,6 +21,7 @@ const anunciosRoutes = require("./src/routes/anuncios.routes");
 const dashboardRoutes = require("./src/routes/dashboard.routes");
 const calificacionesRoutes = require("./src/routes/calificaciones.routes");
 const perfilRoutes = require("./src/routes/perfil.routes");
+const reportesRoutes = require("./src/routes/reportes.routes");
 
 /**
  * CORS
@@ -56,6 +57,20 @@ app.use("/api/anuncios", anunciosRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/calificacion", calificacionesRoutes);
 app.use("/api/perfil", perfilRoutes);
+app.use("/api/reportes", reportesRoutes);
+
+/**
+ * AULAS LISTING
+ */
+app.get("/api/aulas", async (req, res) => {
+    try {
+        const result = await pool.query("SELECT * FROM Aula ORDER BY edificio, numero");
+        res.json(result.rows);
+    } catch (err) {
+        console.error("Error al obtener aulas:", err);
+        res.status(500).json({ error: "Error interno al obtener aulas" });
+    }
+});
 
 /**
  * HEALTH CHECK
@@ -79,8 +94,5 @@ app.listen(PORT, "0.0.0.0", () => {
 🌐 Local:
 http://localhost:${PORT}
 
-📱 Red:
-http://[IP_ADDRESS]${PORT}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━
   `);
 });

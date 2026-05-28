@@ -51,7 +51,7 @@ router.get('/', async (req, res) => {
 
 // endpoint para crear clases
 router.post('/', async (req, res) => {
-    const { id_mat, id_profesor, periodo, anio } = req.body;
+    const { id_mat, id_profesor, periodo, anio, id_aula, dias_semana, hora_inicio, hora_fin } = req.body;
     try {
         // Generar codigo_acceso (6 caracteres alfanuméricos)
         const codigo_acceso = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -60,32 +60,46 @@ router.post('/', async (req, res) => {
         const resultado = await pool.query(query, [id_mat, id_profesor, periodo, anio, codigo_acceso]);
         const nuevaClase = resultado.rows[0];
 
-        // Obtener creditos de la materia
-        const materiaRes = await pool.query('SELECT creditos FROM Materia WHERE id_mat = $1', [id_mat]);
-        const creditos = materiaRes.rows[0]?.creditos || 0;
+        // Si el frontend envía horarios específicos, los insertamos
+        if (dias_semana && Array.isArray(dias_semana) && dias_semana.length > 0) {
+            const aulaFinal = id_aula || 1;
+            const hInicio = hora_inicio || '08:00:00';
+            const hFin = hora_fin || '09:00:00';
 
-        let dias = [];
-        if (creditos === 4) {
-            dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves'];
-        } else if (creditos === 5) {
-            dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
-        } else if (creditos > 0) {
-            const todosLosDias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
-            dias = todosLosDias.slice(0, creditos);
-        }
-
-        if (dias.length > 0) {
-            const aulaRes = await pool.query('SELECT id_aula FROM Aula LIMIT 1');
-            const id_aula = aulaRes.rows[0]?.id_aula || 1;
-
-            const horaInicio = '08:00:00';
-            const horaFin = '09:00:00';
-
-            for (const dia of dias) {
+            for (const dia of dias_semana) {
                 await pool.query(
                     'INSERT INTO Horario (id_clase, id_aula, dia_semana, hora_inicio, hora_fin) VALUES ($1, $2, $3, $4, $5)',
-                    [nuevaClase.id_clase, id_aula, dia, horaInicio, horaFin]
+                    [nuevaClase.id_clase, aulaFinal, dia, hInicio, hFin]
                 );
+            }
+        } else {
+            // Comportamiento anterior de respaldo (según créditos de la materia)
+            const materiaRes = await pool.query('SELECT creditos FROM Materia WHERE id_mat = $1', [id_mat]);
+            const creditos = materiaRes.rows[0]?.creditos || 0;
+
+            let dias = [];
+            if (creditos === 4) {
+                dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves'];
+            } else if (creditos === 5) {
+                dias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
+            } else if (creditos > 0) {
+                const todosLosDias = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
+                dias = todosLosDias.slice(0, creditos);
+            }
+
+            if (dias.length > 0) {
+                const aulaRes = await pool.query('SELECT id_aula FROM Aula LIMIT 1');
+                const id_aula_fallback = aulaRes.rows[0]?.id_aula || 1;
+
+                const horaInicio = '08:00:00';
+                const horaFin = '09:00:00';
+
+                for (const dia of dias) {
+                    await pool.query(
+                        'INSERT INTO Horario (id_clase, id_aula, dia_semana, hora_inicio, hora_fin) VALUES ($1, $2, $3, $4, $5)',
+                        [nuevaClase.id_clase, id_aula_fallback, dia, horaInicio, horaFin]
+                    );
+                }
             }
         }
 

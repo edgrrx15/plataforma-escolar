@@ -11,10 +11,12 @@ const pool = new Pool({
 
 async function querySchema() {
     try {
-        const est = await pool.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'estudiantes'");
-        console.log('Estudiantes columns:', est.rows.map(r => r.column_name));
-        const doc = await pool.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'docentes'");
-        console.log('Docentes columns:', doc.rows.map(r => r.column_name));
+        const c = await pool.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'clases'");
+        console.log('Clases columns:', c.rows.map(r => r.column_name));
+        const h = await pool.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'horario'");
+        console.log('Horario columns:', h.rows.map(r => r.column_name));
+        const a = await pool.query("SELECT column_name FROM information_schema.columns WHERE table_name = 'aula'");
+        console.log('Aula columns:', a.rows.map(r => r.column_name));
     } catch(err) {
         console.error(err);
     } finally {
