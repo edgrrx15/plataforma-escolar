@@ -184,7 +184,7 @@ const PerfilUsuario = () => {
                   {perfil.estado && (
                     <span className="flex items-center gap-2 px-4 py-2 bg-emerald-50 border border-emerald-100 text-emerald-600 rounded-xl text-xs font-bold uppercase tracking-wider">
                       <ShieldCheck size={15} />
-                      Activo
+                      {perfil.estado}
                     </span>
                   )}
 
@@ -193,75 +193,6 @@ const PerfilUsuario = () => {
               </div>
 
             </div>
-
-          </div>
-
-        </div>
-
-        {/* STATS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5">
-
-          <div className="bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm">
-
-            <div className="w-14 h-14 rounded-2xl bg-[#e7f1ff] flex items-center justify-center">
-              <BookOpen className="text-[#1d6ff2]" size={28} />
-            </div>
-
-            <h2 className="mt-5 text-4xl font-bold text-[#08183f]">
-              8
-            </h2>
-
-            <p className="mt-2 text-[#667394] font-medium">
-              Materias activas
-            </p>
-
-          </div>
-
-          <div className="bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm">
-
-            <div className="w-14 h-14 rounded-2xl bg-[#eefaf4] flex items-center justify-center">
-              <ClipboardCheck className="text-[#1eb98f]" size={28} />
-            </div>
-
-            <h2 className="mt-5 text-4xl font-bold text-[#08183f]">
-              24
-            </h2>
-
-            <p className="mt-2 text-[#667394] font-medium">
-              Tareas entregadas
-            </p>
-
-          </div>
-
-          <div className="bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm">
-
-            <div className="w-14 h-14 rounded-2xl bg-[#fff4e8] flex items-center justify-center">
-              <BarChart3 className="text-[#ff922b]" size={28} />
-            </div>
-
-            <h2 className="mt-5 text-4xl font-bold text-[#08183f]">
-              92%
-            </h2>
-
-            <p className="mt-2 text-[#667394] font-medium">
-              Promedio general
-            </p>
-
-          </div>
-
-          <div className="bg-white border border-[#e4eaf3] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 shadow-sm">
-
-            <div className="w-14 h-14 rounded-2xl bg-[#f4eeff] flex items-center justify-center">
-              <GraduationCap className="text-[#7c4dff]" size={28} />
-            </div>
-
-            <h2 className="mt-5 text-4xl font-bold text-[#08183f]">
-              6°
-            </h2>
-
-            <p className="mt-2 text-[#667394] font-medium">
-              Semestre actual
-            </p>
 
           </div>
 
@@ -333,70 +264,9 @@ const PerfilUsuario = () => {
                       {perfil.direccion}
                     </p>
                   </div>
-
                 </div>
-
               </div>
-
             </div>
-
-            {/* ACTIVIDAD */}
-            <div className="bg-gradient-to-br from-[#1d6ff2] to-[#4f8fff] rounded-3xl sm:rounded-[28px] p-5 sm:p-6 text-white shadow-xl shadow-blue-500/20">
-
-              <div className="flex items-center justify-between">
-
-                <div>
-                  <p className="text-blue-100 font-medium">
-                    Actividad reciente
-                  </p>
-
-                  <h2 className="text-4xl font-extrabold mt-3">
-                    94%
-                  </h2>
-                </div>
-
-                <div className="w-16 h-16 rounded-2xl bg-white/15 flex items-center justify-center backdrop-blur-xl">
-                  <Clock3 size={30} />
-                </div>
-
-              </div>
-
-              <div className="mt-8 space-y-4">
-
-                <div className="flex items-center justify-between">
-                  <span className="text-blue-100">
-                    Asistencia
-                  </span>
-
-                  <span className="font-bold">
-                    96%
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-blue-100">
-                    Participación
-                  </span>
-
-                  <span className="font-bold">
-                    89%
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <span className="text-blue-100">
-                    Actividades
-                  </span>
-
-                  <span className="font-bold">
-                    93%
-                  </span>
-                </div>
-
-              </div>
-
-            </div>
-
           </div>
 
           {/* DERECHA */}
@@ -451,46 +321,6 @@ const PerfilUsuario = () => {
 
                 </div>
 
-                {/* PROGRAMA */}
-                <div className="bg-gradient-to-br from-[#1d6ff2] to-[#7c4dff] rounded-3xl sm:rounded-[28px] p-5 sm:p-8 text-white shadow-xl shadow-blue-500/20 md:col-span-2 relative overflow-hidden">
-
-                  <div className="absolute -right-10 -top-10 w-48 h-48 bg-white/10 rounded-full blur-3xl"></div>
-
-                  <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-
-                    <div className="flex items-center gap-5">
-
-                      <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center">
-                        <BookOpen size={30} />
-                      </div>
-
-                      <div>
-                        <p className="text-blue-100 font-bold text-[11px] uppercase tracking-widest mb-1">
-                          Programa educativo
-                        </p>
-
-                        <h3 className="text-2xl font-black tracking-tight">
-                          Ingeniería en Software
-                        </h3>
-                      </div>
-
-                    </div>
-
-                    <div className="text-left lg:text-right">
-
-                      <p className="text-blue-100 font-bold text-[11px] uppercase tracking-widest mb-1">
-                        Ciclo actual
-                      </p>
-
-                      <p className="text-2xl font-black tracking-tight">
-                        6to Semestre
-                      </p>
-
-                    </div>
-
-                  </div>
-
-                </div>
 
               </div>
 
@@ -502,7 +332,7 @@ const PerfilUsuario = () => {
 
       </div>
 
-    </div>
+    </div >
   );
 };
 

@@ -18,8 +18,8 @@ import ModalRecuperar from '../Dialogs/ModalRecuperar';
 import ModalContacto from '../Dialogs/ModalContacto';
 
 const Login = ({ setUsuario }) => {
-  const [email, setEmail] = useState('sasa@sasa.com');
-  const [password, setPassword] = useState('sasa');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [tipoUsuario, setTipoUsuario] = useState('estudiante');
   const [error, setError] = useState('');
   const [modalContacto, setModalContacto] = useState(false);
@@ -34,7 +34,7 @@ const Login = ({ setUsuario }) => {
     setError('');
 
     try {
-      const respuesta = await fetch('http://localhost:3000/api/login', {
+      const respuesta = await fetch('http://192.168.0.30:3000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password, tipoUsuario }),

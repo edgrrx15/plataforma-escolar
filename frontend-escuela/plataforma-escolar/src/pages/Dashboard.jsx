@@ -85,7 +85,7 @@ const Dashboard = () => {
     t.titulo.toLowerCase().includes(textoBusqueda.toLowerCase()) ||
     t.materia.toLowerCase().includes(textoBusqueda.toLowerCase())
   );
-  
+
   const eventos = data.eventos;
   const stats = data.stats;
 
@@ -117,14 +117,16 @@ const Dashboard = () => {
             Consulta tus materias, tareas pendientes, eventos y tu progreso académico desde un solo lugar.
           </p>
         </div>
-        
+
         {/* Buscador y Perfil de Usuario alineados responsivamente */}
         <div className="flex flex-col sm:flex-row sm:items-center gap-4 shrink-0 w-full lg:w-auto">
-          <GooeyInput
-            placeholder="Buscar materias o tareas..."
-            value={textoBusqueda}
-            onChange={(e) => setTextoBusqueda(e.target.value)}
-          />
+          <div className="w-[320px] lg:w-[360px] flex justify-end shrink-0">
+            <GooeyInput
+              placeholder="Buscar materias o tareas..."
+              value={textoBusqueda}
+              onChange={(e) => setTextoBusqueda(e.target.value)}
+            />
+          </div>
 
           <div className="bg-white/80 backdrop-blur-lg border border-slate-200 rounded-2xl p-2.5 pr-6 flex items-center gap-4 shadow-sm hover:shadow-md transition-all cursor-pointer w-full sm:w-auto">
             <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-white font-bold text-lg shadow-inner">
@@ -137,28 +139,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-10">
-        {[
-          { title: 'Materias activas', value: stats.materias_activas, icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50', border: 'border-indigo-100' },
-          { title: 'Tareas entregadas', value: stats.tareas_entregadas, icon: ClipboardCheck, color: 'text-violet-600', bg: 'bg-violet-50', border: 'border-violet-100' },
-          { title: 'Promedio general', value: `${stats.promedio_general}%`, icon: BarChart3, color: 'text-emerald-600', bg: 'bg-emerald-50', border: 'border-emerald-100' },
-          { title: 'Eventos hoy', value: stats.eventos_hoy, icon: CalendarDays, color: 'text-rose-500', bg: 'bg-rose-50', border: 'border-rose-100' }
-        ].map((stat, i) => (
-          <div key={i} className="group bg-white/70 backdrop-blur-xl rounded-[28px] border border-white/60 p-6 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] hover:-translate-y-1 transition-all duration-300 relative overflow-hidden">
-            <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full ${stat.bg} opacity-50 blur-2xl group-hover:scale-150 transition-transform duration-500`}></div>
-            <div className="relative z-10 flex flex-col">
-              <div className={`w-14 h-14 rounded-2xl ${stat.bg} border ${stat.border} flex items-center justify-center mb-5 transform group-hover:scale-110 transition-transform duration-300`}>
-                <stat.icon className={stat.color} size={26} />
-              </div>
-              <h2 className="text-[40px] leading-none font-black text-slate-800 tracking-tight">{stat.value}</h2>
-              <p className="mt-2 text-slate-500 font-bold text-xs tracking-wider uppercase">{stat.title}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-
       {/* Main Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
@@ -267,70 +247,10 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-
         {/* Right Col */}
         <div className="flex flex-col gap-8">
 
-          {/* Rendimiento */}
-          {/*Si es docente no saldra el cuadro de rendimiendo, solo saldran  a los estudiantes */}
-          {data?.rol_usuario?.toLowerCase().trim() !== 'docente' && (
-            <div className="bg-gradient-to-br from-indigo-600 to-violet-700 rounded-[32px] p-8 text-white shadow-[0_20px_40px_rgba(79,70,229,0.3)] relative overflow-hidden">
 
-              <div className="absolute -top-24 -right-24 w-64 h-64 bg-white opacity-10 rounded-full blur-3xl"></div>
-              <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-indigo-400 opacity-20 rounded-full blur-3xl"></div>
-
-              <div className="relative z-10 flex items-start justify-between">
-                <div>
-                  <p className="text-indigo-200 font-bold tracking-widest uppercase text-xs mb-1">
-                    Tu Rendimiento
-                  </p>
-
-                  <h2 className="text-[64px] leading-none font-black tracking-tight drop-shadow-md">
-                    {materias.length === 0 ? 'N/A' : 'A+'}
-                  </h2>
-                </div>
-
-                <div className="w-16 h-16 rounded-3xl bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-md shadow-inner">
-                  <TrendingUp size={32} className="text-white drop-shadow-sm" />
-                </div>
-              </div>
-
-              <div className="relative z-10 mt-10 space-y-6">
-                {[
-                  {
-                    label: 'Participación',
-                    val: materias.length === 0 ? '0%' : '89%',
-                    color: 'bg-blue-400'
-                  },
-                  {
-                    label: 'Tareas',
-                    val: materias.length === 0 ? '0%' : '93%',
-                    color: 'bg-purple-400'
-                  }
-                ].map((item, i) => (
-                  <div key={i}>
-                    <div className="flex items-center justify-between mb-2.5">
-                      <span className="text-indigo-100 font-medium text-[15px]">
-                        {item.label}
-                      </span>
-
-                      <span className="font-bold text-white text-[15px]">
-                        {item.val}
-                      </span>
-                    </div>
-
-                    <div className="w-full h-2 bg-black/20 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${item.color} shadow-[0_0_10px_rgba(255,255,255,0.3)]`}
-                        style={{ width: item.val }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-            </div>
-          )}
           {/* Agenda */}
           <div className="bg-white/70 backdrop-blur-xl rounded-[32px] border border-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
             <div className="flex items-center gap-4 mb-8">
@@ -363,44 +283,9 @@ const Dashboard = () => {
               )}
             </div>
           </div>
-
-          {/* Logros */}
-          <div className="bg-white/70 backdrop-blur-xl rounded-[32px] border border-white/60 p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
-            <div className="flex items-center gap-4 mb-8">
-              <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100/50 flex items-center justify-center">
-                <GraduationCap className="text-emerald-500" size={28} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-extrabold text-slate-800 tracking-tight">Logros</h2>
-                <p className="text-slate-500 font-medium text-sm mt-0.5">Tus últimos avances</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="bg-white border border-slate-100 rounded-[24px] p-5 flex items-center gap-4 hover:shadow-md hover:border-emerald-100 transition-all cursor-default">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-50 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="text-emerald-500" size={24} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 text-[15px]">Proyecto completado</h3>
-                  <p className="text-slate-500 text-[13px] font-medium mt-0.5">Entregaste antes de tiempo.</p>
-                </div>
-              </div>
-
-              <div className="bg-white border border-slate-100 rounded-[24px] p-5 flex items-center gap-4 hover:shadow-md hover:border-blue-100 transition-all cursor-default">
-                <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center shrink-0">
-                  <TrendingUp className="text-blue-500" size={24} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-slate-800 text-[15px]">Promedio destacado</h3>
-                  <p className="text-slate-500 text-[13px] font-medium mt-0.5">Mantienes un promedio mayor a 90.</p>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

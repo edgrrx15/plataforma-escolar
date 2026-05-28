@@ -12,6 +12,9 @@ import {
   BookOpenCheck,
   Menu,
   X,
+  Settings,
+  FileText,
+  Users
 } from 'lucide-react';
 
 const Sidebar = ({ usuario, setUsuario }) => {
@@ -117,74 +120,91 @@ const Sidebar = ({ usuario, setUsuario }) => {
         {/* Navegación */}
         <nav className="flex-1 px-4 overflow-y-auto">
           <ul className="space-y-2">
-            <EnlaceSidebar
-              to="/dashboard"
-              icon={<LayoutDashboard size={22} />}
-              cerrarMenu={() => setMenuAbierto(false)}
-            >
-              Dashboard
-            </EnlaceSidebar>
+            {usuario?.rol === 'admin' ? (
+              <>
+                <EnlaceSidebar
+                  to="/admin"
+                  icon={<LayoutDashboard size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Dashboard
+                </EnlaceSidebar>
+                <EnlaceSidebar
+                  to="/usuarios"
+                  icon={<Users size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Usuarios
+                </EnlaceSidebar>
+                <EnlaceSidebar
+                  to="/gestion-clases"
+                  icon={<BookOpen size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Clases
+                </EnlaceSidebar>
+              </>
+            ) : (
+              <>
+                <EnlaceSidebar
+                  to="/dashboard"
+                  icon={<LayoutDashboard size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Dashboard
+                </EnlaceSidebar>
 
-            <EnlaceSidebar
-              to="/clases"
-              icon={<BookOpen size={22} />}
-              cerrarMenu={() => setMenuAbierto(false)}
-            >
-              Mis clases
-            </EnlaceSidebar>
+                <EnlaceSidebar
+                  to="/clases"
+                  icon={<BookOpen size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Mis clases
+                </EnlaceSidebar>
 
-            <EnlaceSidebar
-              to="/tareas"
-              icon={<ClipboardList size={22} />}
-              cerrarMenu={() => setMenuAbierto(false)}
-            >
-              Tareas
-            </EnlaceSidebar>
+                <EnlaceSidebar
+                  to="/tareas"
+                  icon={<ClipboardList size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Tareas
+                </EnlaceSidebar>
 
-            <EnlaceSidebar
-              to="/horario"
-              icon={<Calendar size={22} />}
-              cerrarMenu={() => setMenuAbierto(false)}
-            >
-              Horario
-            </EnlaceSidebar>
+                <EnlaceSidebar
+                  to="/horario"
+                  icon={<Calendar size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Horario
+                </EnlaceSidebar>
 
-            {/* Solo mostramos entegas si el usuario es docente */}
-            {usuario?.rol === 'docente' && (
-              <EnlaceSidebar
-                to="/entregas"
-                icon={<BookOpenCheck size={22} />}
-                cerrarMenu={() => setMenuAbierto(false)}
-              >
-                Entregas
-              </EnlaceSidebar>
-            )}
+                {/* Solo mostramos entegas si el usuario es docente */}
+                {usuario?.rol === 'docente' && (
+                  <EnlaceSidebar
+                    to="/entregas"
+                    icon={<BookOpenCheck size={22} />}
+                    cerrarMenu={() => setMenuAbierto(false)}
+                  >
+                    Entregas
+                  </EnlaceSidebar>
+                )}
 
-            <EnlaceSidebar
-              to="/calificaciones"
-              icon={<BarChart3 size={22} />}
-              cerrarMenu={() => setMenuAbierto(false)}
-            >
-              Calificaciones
-            </EnlaceSidebar>
+                <EnlaceSidebar
+                  to="/calificaciones"
+                  icon={<BarChart3 size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Calificaciones
+                </EnlaceSidebar>
 
-            <EnlaceSidebar
-              to="/perfil"
-              icon={<User size={22} />}
-              cerrarMenu={() => setMenuAbierto(false)}
-            >
-              Perfil
-            </EnlaceSidebar>
-
-            {/* Solo mostramos admin si el usuario es administrador */}
-            {usuario?.rol === 'admin' && (
-              <EnlaceSidebar
-                to="/admin"
-                icon={<User size={22} />}
-                cerrarMenu={() => setMenuAbierto(false)}
-              >
-                Admin
-              </EnlaceSidebar>
+                <EnlaceSidebar
+                  to="/perfil"
+                  icon={<User size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Perfil
+                </EnlaceSidebar>
+              </>
             )}
           </ul>
         </nav>
