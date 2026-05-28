@@ -34,7 +34,7 @@ function Clases() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f8ff] p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8">
+    <div className="max-w-[2000px] mx-auto bg-[#f5f8ff] p-4 pt-24 sm:p-6 sm:pt-28 lg:p-8">
 
       {/* HEADER */}
       <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6 mb-10">
@@ -96,7 +96,7 @@ function Clases() {
       <div>
         <ClaseCard searchQuery={textoBusqueda} />
       </div>
-    </div>
+    </div >
   )
 }
 export default Clases

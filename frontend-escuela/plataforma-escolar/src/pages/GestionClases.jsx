@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Search, Plus, Loader2 } from 'lucide-react';
+import ModalCrearClase from '../Dialogs/ModalCrearClase';
+import { GooeyInput } from '../components/Buscador';
 
 const GestionClases = () => {
   const [clases, setClases] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState('');
+  const [modalAbierto, setModalAbierto] = useState(false);
 
   useEffect(() => {
     const fetchClases = async () => {
@@ -23,7 +26,7 @@ const GestionClases = () => {
     fetchClases();
   }, []);
 
-  const clasesFiltradas = clases.filter(c => 
+  const clasesFiltradas = clases.filter(c =>
     c.materia_nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
     c.profesor_nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
     c.profesor_apellido.toLowerCase().includes(busqueda.toLowerCase()) ||
@@ -31,37 +34,46 @@ const GestionClases = () => {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-[2000px] mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[#0f1b3d]">Gestión de Clases</h1>
           <p className="text-[#667394]">Crea materias y asigna docentes a los grupos</p>
         </div>
-        <button className="flex items-center justify-center gap-2 bg-[#1d6ff2] text-white px-4 py-2.5 rounded-xl font-medium hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/25 active:scale-95">
+        <button
+          onClick={() => setModalAbierto(true)}
+          className="cursor-pointer flex items-center justify-center gap-2 bg-[#1d6ff2] text-white px-4 py-2.5 rounded-xl font-medium hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/25 active:scale-95">
           <Plus size={20} />
           <span>Nueva Clase</span>
         </button>
       </div>
 
+      <ModalCrearClase
+        modalAbierto={modalAbierto}
+        setModalAbierto={setModalAbierto}
+        onClaseCreada={() => window.location.reload()}
+      />
+
       <div className="bg-white rounded-3xl border border-[#e4eaf3] p-6 shadow-sm min-h-[400px]">
-        
+
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-           <div className="relative w-full sm:w-96">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#94a3b8]" size={20} />
-            <input
-              type="text"
-              placeholder="Buscar clase por materia, docente o código..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-[#e4eaf3] bg-[#f8fbff] text-[#0f1b3d] outline-none focus:border-[#1d6ff2] focus:ring-2 focus:ring-blue-500/20 transition-all"
+          <div className="relative w-full sm:w-96">
+            <GooeyInput
               value={busqueda}
+              collapsedWidth={400}
+              expandedWidth={600}
               onChange={(e) => setBusqueda(e.target.value)}
+              placeholder="Buscar clase por materia, docente o código..."
             />
+
+
           </div>
         </div>
 
         {cargando ? (
-           <div className="flex items-center justify-center h-[300px]">
-             <Loader2 className="animate-spin text-[#1d6ff2]" size={40} />
-           </div>
+          <div className="flex items-center justify-center h-[300px]">
+            <Loader2 className="animate-spin text-[#1d6ff2]" size={40} />
+          </div>
         ) : clasesFiltradas.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {clasesFiltradas.map((clase) => (

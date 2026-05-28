@@ -143,6 +143,13 @@ const Sidebar = ({ usuario, setUsuario }) => {
                 >
                   Clases
                 </EnlaceSidebar>
+                <EnlaceSidebar
+                  to="/reportes"
+                  icon={<BarChart3 size={22} />}
+                  cerrarMenu={() => setMenuAbierto(false)}
+                >
+                  Reportes
+                </EnlaceSidebar>
               </>
             ) : (
               <>

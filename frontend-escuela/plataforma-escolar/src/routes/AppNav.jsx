@@ -12,6 +12,7 @@ import Entregas from '../pages/Entregas'
 import Login from '../pages/Login'
 import Admin from '../pages/Admin'
 import Usuarios from '../pages/Usuarios'
+import Reportes from '../pages/ReportesAdmin'
 import GestionClases from '../pages/GestionClases'
 
 function AppNav({ usuario, setUsuario }) {
@@ -49,6 +50,7 @@ function AppNav({ usuario, setUsuario }) {
       <Route path="/admin" element={usuario && usuario.rol === 'admin' ? <Admin /> : <Navigate to="/" />} />
       <Route path="/usuarios" element={usuario && usuario.rol === 'admin' ? <Usuarios /> : <Navigate to="/" />} />
       <Route path="/gestion-clases" element={usuario && usuario.rol === 'admin' ? <GestionClases /> : <Navigate to="/" />} />
+      <Route path="/reportes" element={usuario && usuario.rol === 'admin' ? <Reportes /> : <Navigate to="/" />} />
 
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>

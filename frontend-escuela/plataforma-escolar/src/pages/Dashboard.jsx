@@ -9,6 +9,9 @@ import {
   Clock3,
   CheckCircle2,
   TrendingUp,
+  TrendingDown,
+  Award,
+  ShieldAlert,
   MoreVertical
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -34,8 +37,16 @@ const Dashboard = () => {
     }
   });
 
+  const [reportes, setReportes] = useState({
+    promedio_general: 0,
+    top_estudiantes_global: [],
+    top_estudiantes_materia: [],
+    top_materias: [],
+    peores_materias: []
+  });
+
   useEffect(() => {
-    const fetchDashboard = async () => {
+    const fetchDashboardAndReports = async () => {
       try {
         const usuarioStr = localStorage.getItem('usuario');
         const usuarioObj = usuarioStr ? JSON.parse(usuarioStr) : null;
@@ -51,14 +62,29 @@ const Dashboard = () => {
           queryParams = `?${params.toString()}`;
         }
 
-        const response = await fetch(`http://localhost:3000/api/dashboard${queryParams}`);
+        const host = window.location.hostname;
+        const response = await fetch(`http://${host}:3000/api/dashboard${queryParams}`);
         const result = await response.json();
         setData(result);
+
+        // Fetch de Reportes Académicos
+        if (usuarioObj) {
+          const repParams = new URLSearchParams();
+          repParams.append('rol', usuarioObj.rol);
+          if (usuarioObj.id_profesor) repParams.append('id_profesor', usuarioObj.id_profesor);
+          if (usuarioObj.id_estudiante) repParams.append('id_estudiante', usuarioObj.id_estudiante);
+
+          const repResponse = await fetch(`http://${host}:3000/api/reportes?${repParams.toString()}`);
+          if (repResponse.ok) {
+            const repResult = await repResponse.json();
+            setReportes(repResult);
+          }
+        }
       } catch (error) {
-        console.error('Error al cargar datos del dashboard:', error);
+        console.error('Error al cargar datos del dashboard o reportes:', error);
       }
     };
-    fetchDashboard();
+    fetchDashboardAndReports();
   }, []);
 
   const gradientColors = [
@@ -139,6 +165,190 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
+      {/* SECCIÓN DE MÉTRICAS Y REPORTES ACADÉMICOS */}
+      <div className="mb-10 space-y-8">
+        {/* Estadísticas de Cabecera Rápida */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="bg-white/70 backdrop-blur-md rounded-[28px] border border-white/60 p-6 shadow-sm flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+              <BarChart3 className="text-indigo-600" size={26} />
+            </div>
+            <div>
+              <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Promedio General</p>
+              <h2 className="text-3xl font-black text-slate-800 mt-1">
+                {reportes.promedio_general ? `${reportes.promedio_general}%` : 'N/A'}
+              </h2>
+            </div>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-md rounded-[28px] border border-white/60 p-6 shadow-sm flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+              <BookOpen className="text-emerald-600" size={26} />
+            </div>
+            <div>
+              <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Materias Activas</p>
+              <h2 className="text-3xl font-black text-slate-800 mt-1">
+                {data.stats?.materias_activas || 0}
+              </h2>
+            </div>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-md rounded-[28px] border border-white/60 p-6 shadow-sm flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+              <Award className="text-amber-500" size={26} />
+            </div>
+            <div>
+              <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Mejor Promedio</p>
+              <h2 className="text-3xl font-black text-slate-800 mt-1">
+                {reportes.top_estudiantes_global?.[0]?.promedio ? `${reportes.top_estudiantes_global[0].promedio}%` : 'N/A'}
+              </h2>
+            </div>
+          </div>
+
+          <div className="bg-white/70 backdrop-blur-md rounded-[28px] border border-white/60 p-6 shadow-sm flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
+              <CalendarDays className="text-rose-500" size={26} />
+            </div>
+            <div>
+              <p className="text-[12px] font-bold text-slate-400 uppercase tracking-wider">Eventos de Hoy</p>
+              <h2 className="text-3xl font-black text-slate-800 mt-1">
+                {data.stats?.eventos_hoy || 0}
+              </h2>
+            </div>
+          </div>
+        </div>
+
+        {/* Paneles de Analíticas */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* CUADRO DE HONOR: TOP 5 ESTUDIANTES */}
+          <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-[32px] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-3.5 mb-6">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center">
+                  <Award className="text-amber-500" size={24} />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-800 text-[18px]">Cuadro de Honor</h3>
+                  <p className="text-slate-500 font-medium text-[13px]">Top 5 Mejores Promedios</p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {reportes.top_estudiantes_global.length === 0 ? (
+                  <p className="text-slate-500 text-sm font-medium text-center py-6">No hay calificaciones registradas.</p>
+                ) : (
+                  reportes.top_estudiantes_global.map((est, idx) => (
+                    <div key={est.id} className="flex items-center justify-between p-3.5 bg-white border border-slate-100 rounded-2xl shadow-sm hover:scale-[1.01] transition-transform">
+                      <div className="flex items-center gap-3">
+                        <span className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
+                          idx === 0 ? 'bg-amber-100 text-amber-600' :
+                          idx === 1 ? 'bg-slate-200 text-slate-600' :
+                          idx === 2 ? 'bg-amber-50 text-amber-700' :
+                          'bg-slate-100 text-slate-500'
+                        }`}>
+                          #{idx + 1}
+                        </span>
+                        <div>
+                          <p className="font-bold text-slate-800 text-sm">{est.nombre} {est.apellido}</p>
+                          <p className="text-xs text-slate-400 font-medium truncate max-w-[140px] sm:max-w-[180px]">{est.email}</p>
+                        </div>
+                      </div>
+                      <span className="text-sm font-black text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg shrink-0">
+                        {est.promedio}%
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* MEJORES ESTUDIANTES POR MATERIA / GRUPO */}
+          <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-[32px] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)]">
+            <div className="flex items-center gap-3.5 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center">
+                <GraduationCap className="text-indigo-600" size={24} />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-slate-800 text-[18px]">Líderes de Grupo</h3>
+                <p className="text-slate-500 font-medium text-[13px]">Top Estudiante por Materia</p>
+              </div>
+            </div>
+
+            <div className="space-y-4 max-h-[300px] overflow-y-auto pr-1">
+              {reportes.top_estudiantes_materia.length === 0 ? (
+                <p className="text-slate-500 text-sm font-medium text-center py-6">Sin líderes de materias aún.</p>
+              ) : (
+                reportes.top_estudiantes_materia.map((item, idx) => (
+                  <div key={idx} className="flex items-center justify-between p-3.5 bg-white border border-slate-100 rounded-2xl shadow-sm">
+                    <div className="truncate pr-2">
+                      <p className="font-extrabold text-slate-800 text-sm truncate">{item.materia}</p>
+                      <p className="text-xs text-slate-500 font-bold mt-0.5 truncate text-indigo-500">🏆 {item.estudiante}</p>
+                    </div>
+                    <span className="text-sm font-black text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-lg shrink-0">
+                      {item.calificacion}
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* RENDIMIENTO POR MATERIAS (TOP VS BAJO) */}
+          <div className="bg-white/70 backdrop-blur-xl border border-white/60 rounded-[32px] p-6 sm:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.03)] flex flex-col justify-between gap-6">
+            {/* Top Materias */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="text-emerald-500" size={20} />
+                <h4 className="font-extrabold text-slate-800 text-[15px]">Materias Destacadas</h4>
+              </div>
+              <div className="space-y-3">
+                {reportes.top_materias.length === 0 ? (
+                  <p className="text-xs text-slate-400 font-medium">Cargando...</p>
+                ) : (
+                  reportes.top_materias.slice(0, 3).map((m, idx) => (
+                    <div key={idx} className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-bold text-slate-600">
+                        <span className="truncate max-w-[70%]">{m.materia}</span>
+                        <span className="text-emerald-600">{m.promedio}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-emerald-500 rounded-full shadow-inner" style={{ width: `${m.promedio}%` }}></div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* Materias con promedio más bajo */}
+            <div>
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingDown className="text-rose-500" size={20} />
+                <h4 className="font-extrabold text-slate-800 text-[15px]">Materias con Alerta</h4>
+              </div>
+              <div className="space-y-3">
+                {reportes.peores_materias.length === 0 ? (
+                  <p className="text-xs text-slate-400 font-medium">Cargando...</p>
+                ) : (
+                  reportes.peores_materias.map((m, idx) => (
+                    <div key={idx} className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-bold text-slate-600">
+                        <span className="truncate max-w-[70%]">{m.materia}</span>
+                        <span className="text-rose-500">{m.promedio}%</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div className="h-full bg-rose-500 rounded-full shadow-inner" style={{ width: `${m.promedio}%` }}></div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Main Grid */}
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
 
